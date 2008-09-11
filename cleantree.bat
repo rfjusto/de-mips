@@ -1,3 +1,5 @@
+echo ALWAYS run me before commiting to the source tree.
+
 echo clean debug folder
 cd DeAssembly
 cd bin

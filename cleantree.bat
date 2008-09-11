@@ -14,3 +14,14 @@ cd release
 del *.exe
 del *.manifest
 del *.pdb
+
+echo clean object files
+cd..
+cd..
+cd obj
+cd Debug
+del *.*
+
+cd..
+cd Release
+del *.*

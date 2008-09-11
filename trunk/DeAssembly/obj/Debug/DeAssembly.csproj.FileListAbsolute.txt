@@ -1,8 +1,0 @@
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\bin\Debug\DeAssembly.exe
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\bin\Debug\DeAssembly.pdb
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\obj\Debug\DeAssembly.Properties.Resources.resources
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\obj\Debug\DeAssembly.csproj.GenerateResource.Cache
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\obj\Debug\DeAssembly.exe
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\obj\Debug\DeAssembly.pdb
-C:\Users\Ruben\Documents\Visual Studio 2008\Projects\DeAssembly\DeAssembly\obj\Debug\DeAssembly.Form1.resources

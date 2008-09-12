@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
@@ -17,6 +16,7 @@ namespace DeAssembly
             InitializeComponent();
 
             string filename = "2-29.asm";
+            //filename = "Fibonacci.asm";
 
             if (args.Length >= 1)
                 filename = args[0];
@@ -63,14 +63,19 @@ namespace DeAssembly
         private void DecompileLine(ProgramLine line)
         {
             string processedLine = "";
-            string[] lineParameters = line.Assembly.ToLower().Split(' ').Skip(1).ToArray();
+            string[] lineParameters;
+
+            if (!line.Assembly.Contains(":"))
+                lineParameters = line.Assembly.Substring(line.Assembly.IndexOf(' ') + 1).ToLower().Split(' ');
+            else
+                lineParameters = new string[0];
+
             string command = line.Assembly.ToLower().Split(' ')[0];
 
             //strip out any tailing ',' characters or starting '$'
             for(int i = 0; i < lineParameters.Length; i ++)
             {
                 lineParameters[i] = lineParameters[i].TrimEnd(',');
-
                 lineParameters[i] = lineParameters[i].TrimStart('$');
             }
 
@@ -80,7 +85,7 @@ namespace DeAssembly
                     lineParameters[i] = "0";
 
             //LABEL
-            if (line.Assembly.Contains(':'))
+            if (line.Assembly.Contains(":"))
                 //processedLine = "Unhandled Label: \"" + line + "\"";
                 processedLine = line.Assembly;
             //COMMAND
@@ -115,7 +120,7 @@ namespace DeAssembly
                         break;
 
                     default:
-                        processedLine = "Unidentified: \"" + line + "\"";
+                        processedLine = "Unidentified: \"" + line.Assembly + "\"";
                         break;
                 }
 
@@ -136,7 +141,7 @@ namespace DeAssembly
                 {
                     line.Assembly = line.Assembly.Trim();
                     int z = line.Assembly.IndexOf('#');
-                    lineRemainder = line.Assembly.Substring(0, z - 1);//line.Assembly.IndexOf('#'));
+                    lineRemainder = line.Assembly.Substring(0, z);
 
                     //strip spaces
                     string[] lineTokens = lineRemainder.ToLower().Split(' ');

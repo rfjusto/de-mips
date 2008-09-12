@@ -1,6 +1,9 @@
-﻿using System;
+﻿//DEBUG SETTINGS
+#define ENABLE__SIMPLIFY_ARITHMETIC
+#define ENABLE__SIMPLIFY_EQUAL
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace DeAssembly
@@ -10,7 +13,9 @@ namespace DeAssembly
         //assume only two values and one operand (+, -, *, or /). Only removes zeros right now.
         static public string SimplifyArithmetic(string operand, string first, string second)
         {
-            string finalExpression = "";
+            string finalExpression = first + " " + operand + " " + second; //default
+
+            #if ENABLE__SIMPLIFY_ARITHMETIC
 
             //0 OP 0
             if (first.Equals("0") && second.Equals("0"))
@@ -48,17 +53,16 @@ namespace DeAssembly
                         throw new Exception("Invalid operand detected in SimplifyExpression!");
                 }
             }
-            //A OP B
-            else
-                finalExpression = first + " " + operand + " " + second;
-
+            #endif
 
             return finalExpression;
         }
 
         static public string SimplifyEqual(string left, string right)
         {
-            string finalEquals = "";
+            string finalEquals = left + " = " + right; //default
+
+            #if ENABLE__SIMPLIFY_EQUAL
             string[] rightTokens = right.ToLower().Split(' ');
 
             //has two terms, FYI third token is for operand.
@@ -74,16 +78,10 @@ namespace DeAssembly
                     finalEquals = left + "--";
                 else
                     finalEquals = left + "++";
-            //(rightTokens[1].Equals("-" || rightTokens[1].Equals("+")) && rightTokens[2].Equals("1")
-            {
-
-            }
-
-            //failed to simplify
-            if (finalEquals.Equals(""))
-                finalEquals = left + " = " + right;
+            #endif
 
             return finalEquals;
+        
         }
     }
 }

@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeAssembly
+/*
+ *TODO LIST:
+ *Add { } support here or to C language emitter.
+ *
+*/
+namespace DeMIPS
 {
     class ProgramBlock
     {

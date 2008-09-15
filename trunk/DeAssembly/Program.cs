@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace DeAssembly
+namespace DeMIPS
 {
     static class Program
     {

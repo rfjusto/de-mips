@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeAssembly
+namespace DeMIPS
 {
     class MathParser
     {
@@ -63,7 +63,7 @@ namespace DeAssembly
             string finalEquals = left + " = " + right; //default
 
             #if ENABLE__SIMPLIFY_EQUAL
-            string[] rightTokens = right.ToLower().Split(' ');
+            string[] rightTokens = right.Split(' ');
 
             //has two terms, FYI third token is for operand.
             if (rightTokens.Length > 1 && rightTokens.Length < 4)

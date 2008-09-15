@@ -1,4 +1,4 @@
-	add $t0, $zero, $zero #v
+	add $t0, $zero, $zero
 loop:
 	beq $a1, $zero, finish #loop:	beq $a1, $zero, finish
 	add $t0, $t0, $a0

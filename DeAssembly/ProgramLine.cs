@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeAssembly
+namespace DeMIPS
 {
     class ProgramLine
     {
         private string assembly;
-        private string cpp;
+        private string assemblyComment; //TODO: This is loaded but the GUI doesn't use it.
+        private string highlevel;
         private bool isDecompiled;
 
         #region properties
@@ -18,10 +19,16 @@ namespace DeAssembly
             set { assembly = value; }
         }
 
-        public string CPP
+        public string AssemblyComment
         {
-            get { return cpp; }
-            set { cpp = value; }
+            get { return assemblyComment; }
+            set { assemblyComment = value; }
+        }
+
+        public string Highlevel
+        {
+            get { return highlevel; }
+            set { highlevel = value; }
         }
 
         public bool IsDecompiled

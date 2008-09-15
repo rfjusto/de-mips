@@ -1,4 +1,4 @@
-﻿namespace DeAssembly
+﻿namespace DeMIPS
 {
     partial class Form1
     {

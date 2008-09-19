@@ -4,11 +4,6 @@
         <name>DeMIPS</name>
     </assembly>
     <members>
-        <member name="M:DeMIPS.Program.Main(System.String[])">
-            <summary>
-            The main entry point for the application.
-            </summary>
-        </member>
         <member name="T:DeMIPS.Form1">
             <summary>
             Handles GUI events and components.
@@ -26,7 +21,7 @@
             </summary>
             <param name="filename">Name to decompile</param>
         </member>
-        <member name="M:DeMIPS.Form1.DecompileLine(DeMIPS.ProgramLine)">
+        <member name="M:DeMIPS.Form1.DecompileLine(DeMIPS.IProgramChunk)">
             <summary>
             This decompiles a single line of MIPS to C. This will be requiring heavy
             reworking so I won't document much.
@@ -82,6 +77,11 @@
             <summary>
               Overrides the current thread's CurrentUICulture property for all
               resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="M:DeMIPS.Program.Main(System.String[])">
+            <summary>
+            The main entry point for the application.
             </summary>
         </member>
     </members>

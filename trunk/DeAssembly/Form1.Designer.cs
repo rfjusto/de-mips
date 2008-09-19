@@ -37,11 +37,13 @@
             this.ButtonDecompile = new System.Windows.Forms.Button();
             this.ButtonQuit = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // TextBoxOutput
             // 
-            this.TextBoxOutput.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.TextBoxOutput.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxOutput.Location = new System.Drawing.Point(459, 58);
             this.TextBoxOutput.Multiline = true;
             this.TextBoxOutput.Name = "TextBoxOutput";
@@ -53,7 +55,7 @@
             // 
             // TextBoxInput
             // 
-            this.TextBoxInput.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxInput.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxInput.Location = new System.Drawing.Point(15, 58);
             this.TextBoxInput.Multiline = true;
             this.TextBoxInput.Name = "TextBoxInput";
@@ -99,11 +101,11 @@
             // 
             // ButtonDecompile
             // 
-            this.ButtonDecompile.Location = new System.Drawing.Point(630, 10);
+            this.ButtonDecompile.Location = new System.Drawing.Point(619, 10);
             this.ButtonDecompile.Name = "ButtonDecompile";
-            this.ButtonDecompile.Size = new System.Drawing.Size(100, 25);
+            this.ButtonDecompile.Size = new System.Drawing.Size(125, 25);
             this.ButtonDecompile.TabIndex = 8;
-            this.ButtonDecompile.Text = "Decompile";
+            this.ButtonDecompile.Text = "Load and Decompile";
             this.ButtonDecompile.UseVisualStyleBackColor = true;
             this.ButtonDecompile.Click += new System.EventHandler(this.ButtonDecompile_Click);
             // 
@@ -126,11 +128,31 @@
             this.label3.TabIndex = 10;
             this.label3.Text = "Active File:";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(625, 41);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Status:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(671, 41);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(53, 13);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Unknown";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 556);
+            this.ClientSize = new System.Drawing.Size(898, 556);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.ButtonQuit);
             this.Controls.Add(this.ButtonDecompile);
@@ -140,8 +162,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TextBoxInput);
             this.Controls.Add(this.TextBoxOutput);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "DeMIPS - v0.1 alpha";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -158,6 +181,8 @@
         private System.Windows.Forms.Button ButtonDecompile;
         private System.Windows.Forms.Button ButtonQuit;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
 

@@ -44,9 +44,18 @@ namespace DeMIPS
     /// </summary>
     public partial class Form1 : Form
     {
-        //SETTINGS
+        #region constants
+
         //private const string DEFAULT_FILENAME = "2-29.asm";
         private const string DEFAULT_FILENAME = "AlleyCat.asm";
+
+        #endregion
+
+        #region variables
+
+        OpenFileDialog fileSelectionDialog;
+
+        #endregion
 
         /// <summary>
         /// Initializes GUI and starts decompilation process.
@@ -56,6 +65,9 @@ namespace DeMIPS
         {
             InitializeComponent();
 
+            fileSelectionDialog = new OpenFileDialog();
+            fileSelectionDialog.Filter = "mips assembly (*.asm)|*.asm|All files (*.*)|*.*";
+            
             if (args.Length >= 1)
                 TextBoxFileName.Text = args[0];
             else
@@ -73,7 +85,7 @@ namespace DeMIPS
             System.IO.StreamReader file = new System.IO.StreamReader(filename);
             LinkedList<ProgramLine> decompiledFile = new LinkedList<ProgramLine>();
             string tempLine;
-
+            
             while ((tempLine = file.ReadLine()) != null)
                 decompiledFile.AddLast(new ProgramLine(tempLine.ToLower()));
 
@@ -88,7 +100,7 @@ namespace DeMIPS
             {
                 displayAsm[i] = line.Assembly;
 
-#if RELEASE
+            #if RELEASE
                 try
                 {
                     DecompileLine(line);
@@ -98,13 +110,16 @@ namespace DeMIPS
                 {
                     MessageBox.Show(err.Message + "\n" + err.StackTrace, "An error has ocurred during decompilation!");
                 }
-#else //DEBUG
+            #else //DEBUG
                 DecompileLine(line);
-#endif
+            #endif
 
                 displayCode[i] = line.Highlevel;
                 i++;
             }
+
+            if (displayAsm.Length != displayCode.Length)
+                MessageBox.Show("WARNNING: The number of input and output lines differ, GUI may function incorrectly.");
 
             TextBoxInput.Lines = displayAsm;
             TextBoxOutput.Lines = displayCode;
@@ -264,7 +279,11 @@ namespace DeMIPS
 
         private void ButtonSelectFile_Click(object sender, EventArgs e)
         {
-            throw new Exception("Implemented!");
+            if (fileSelectionDialog.ShowDialog() == DialogResult.OK)
+            {
+                TextBoxFileName.Text = fileSelectionDialog.FileName;
+                label5.Text = "Desynchronized";
+            }
         }
 
         private void ButtonDecompile_Click(object sender, EventArgs e)
@@ -272,9 +291,12 @@ namespace DeMIPS
             string filename = TextBoxFileName.Text;
 
             if (File.Exists(filename))
+            {
                 Decompile(filename);
+                label5.Text = "Synchronized";
+            }
             else
-                throw new Exception("Cannot load: " + filename + "!");
+                MessageBox.Show("Cannot find: " + filename);
         }
 
         private void ButtonQuit_Click(object sender, EventArgs e)
@@ -283,5 +305,7 @@ namespace DeMIPS
         }
 
         #endregion
+
+
     }
 }

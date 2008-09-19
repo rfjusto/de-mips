@@ -1,4 +1,4 @@
-echo ALWAYS run me before commiting to the source tree.
+rem ALWAYS run me before commiting to the source tree.
 
 echo clean debug folder
 cd DeAssembly
@@ -20,8 +20,20 @@ cd..
 cd..
 cd obj
 cd Debug
-del *.*
+del *.txt
+del *.cache
+del *.exe
+del *.resources
+del *.pdb
+cd TempPE
+del Properties.Resources.Designer.cs.dll
 
-cd..
+cd..\..
 cd Release
-del *.*
+del *.txt
+del *.cache
+del *.exe
+del *.resources
+del *.pdb
+cd TempPE
+del Properties.Resources.Designer.cs.dll

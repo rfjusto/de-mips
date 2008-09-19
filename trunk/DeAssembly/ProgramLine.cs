@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DeMIPS
 {
-    class ProgramLine
+    class ProgramLine : IProgramChunk
     {
         private string assembly;
         private string assemblyComment; //TODO: This is loaded but the GUI doesn't use it.

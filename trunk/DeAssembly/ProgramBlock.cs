@@ -12,4 +12,14 @@ namespace DeMIPS
     class ProgramBlock
     {
     }
+
+    class BlockVariable
+    {
+    }
+    enum VariableType
+    {
+        BYTE,       //8-bits
+        WORD,       //32-bits
+        DOUBLE_WORD //64-bits
+    }
 }

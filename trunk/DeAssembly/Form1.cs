@@ -4,12 +4,12 @@
 //                                                                     //
 //        Copyright (c) 2008 by Ruben Acuna and Michael Bradley        //
 //                                                                     //
-// This file is part of DeMIPS.
-//
+// This file is part of DeMIPS.                                        //
+//                                                                     //
 // DeMIPS is free software; you can redistribute it and/or             //
 // modify it under the terms of the GNU Lesser General Public          //
 // License as published by the Free Software Foundation; either        //
-// version 3 of the License, or (at your option) any later version.  //
+// version 3 of the License, or (at your option) any later version.    //
 //                                                                     //
 // This library is distributed in the hope that it will be useful,     //
 // but WITHOUT ANY WARRANTY; without even the implied warranty of      //
@@ -25,6 +25,8 @@
 // Michael Bradley                                                     //
 //                                                                     //
 /////////////////////////////////////////////////////////////////////////
+
+#define ENABLE_V4300I_INSTRUCTIONS
 
 using System;
 using System.Collections.Generic;
@@ -43,7 +45,8 @@ namespace DeMIPS
     public partial class Form1 : Form
     {
         //SETTINGS
-        private const string DEFAULT_FILENAME = "2-29.asm";
+        //private const string DEFAULT_FILENAME = "2-29.asm";
+        private const string DEFAULT_FILENAME = "AlleyCat.asm";
 
         /// <summary>
         /// Initializes GUI and starts decompilation process.
@@ -51,17 +54,14 @@ namespace DeMIPS
         /// <param name="args">If args[0] exists, it will automatically be decompiled.</param>
         public Form1(string[] args)
         {
-            string filename = DEFAULT_FILENAME;
-
             InitializeComponent();
 
             if (args.Length >= 1)
-                filename = args[0];
-
-            if (File.Exists(filename))
-                Decompile(filename);
+                TextBoxFileName.Text = args[0];
             else
-                throw new Exception("Cannot load: " + filename + "!");//TODO: GUI work.
+                TextBoxFileName.Text = DEFAULT_FILENAME;
+
+            ButtonDecompile_Click(null, null);
         }
 
         /// <summary>
@@ -87,7 +87,21 @@ namespace DeMIPS
             foreach(ProgramLine line in decompiledFile)
             {
                 displayAsm[i] = line.Assembly;
+
+#if RELEASE
+                try
+                {
+                    DecompileLine(line);
+                }
+
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.Message + "\n" + err.StackTrace, "An error has ocurred during decompilation!");
+                }
+#else //DEBUG
                 DecompileLine(line);
+#endif
+
                 displayCode[i] = line.Highlevel;
                 i++;
             }
@@ -102,7 +116,7 @@ namespace DeMIPS
         /// reworking so I won't document much.
         /// </summary>
         /// <param name="line">Line to decompile.</param>
-        private void DecompileLine(ProgramLine line) //TODO: move to proper file
+        private void DecompileLine(IProgramChunk line) //TODO: move to proper file
         {
             //LABEL
             if (line.Assembly.Contains(":"))
@@ -119,13 +133,13 @@ namespace DeMIPS
                 for (int i = 0; i < lineParameters.Length; i++)
                 {
                     lineParameters[i] = lineParameters[i].TrimEnd(',');
-                    lineParameters[i] = lineParameters[i].TrimStart('$');//TODO: Dumb. Once MathParser matures, this should be removed.
+                    //lineParameters[i] = lineParameters[i].TrimStart('$');//TODO: Dumb. Once MathParser matures, this should be removed.
                 }
 
                 //any $zero's will now be replaced. 
                 //TODO: Once MathParser matures, this should be removed.
                 for (int i = 0; i < lineParameters.Length; i++)
-                    if (lineParameters[i].Equals("zero"))
+                    if (lineParameters[i].Equals("$zero"))
                         lineParameters[i] = "0";
 
                 switch (lineKeyword)
@@ -135,6 +149,7 @@ namespace DeMIPS
                         processedLine = MathParser.SimplifyEqual(lineParameters[0], MathParser.SimplifyArithmetic("+", lineParameters[1], lineParameters[2]));
                         break;
 
+                    case "beql": //fall through. this is suppose to insert NOP before J. V4300i extention.
                     case "beq":
                         processedLine = "if ( " + lineParameters[0] + " == " + lineParameters[1] + " ) goto " + lineParameters[2];
                         break;
@@ -143,7 +158,15 @@ namespace DeMIPS
                         processedLine = "if ( " + lineParameters[0] + " != " + lineParameters[1] + " ) goto " + lineParameters[2];
                         break;
 
+                    case "sllv": //fall through, MathParser will still simplify it.  V4300i extention.
                     case "sll":
+                        if(lineParameters[2].Contains("$"))
+                            throw new Exception("Unexpected variable.");
+                        //HACK: at this point, we know para[2] is a constant. Since this is a bit shift we need to multiple that value by 2.
+                        //      the program is that at this point var's and constants are stored as strings. :(
+                        //      also, this problem may or may not bork the other v/i opcodes.
+                        int tmp = int.Parse(lineParameters[2]) * 2;
+                        lineParameters[2] = "" + tmp;
                         processedLine = MathParser.SimplifyEqual(lineParameters[0], MathParser.SimplifyArithmetic("*", lineParameters[1], lineParameters[2]));
                         break;
 
@@ -155,6 +178,27 @@ namespace DeMIPS
                     case "j":
                         processedLine = "goto " + lineParameters[0];
                         break;
+
+                    case "andi":
+                    	processedLine = lineParameters[0] + " = " + lineParameters[1] + " & 0x" + lineParameters[2];//assuming immediate is in hex.
+                        break;
+
+                    case "ori":
+                    	processedLine = lineParameters[0] + " = " + lineParameters[1] + " | 0x" + lineParameters[2];//assuming immediate is in hex.
+                    	break;
+
+#if ENABLE_V4300I_INSTRUCTIONS
+
+                    //FYI: these will actually fall through to the next case.
+                    case "sync": // we don't care about sync'ing memory.
+                    case "cop0": // command involving coprocessor 0.
+#endif
+                    case "syscall": //fall through - we don't need this.
+                    case "nop" : // fall through - no opcode
+                    case "???": //fall through - we don't need this. Disassembler specific.
+                        processedLine = "//" + lineKeyword;
+                    	break;
+
                 }
 
                 if(processedLine.Equals("") && !line.Assembly.Equals(""))
@@ -215,5 +259,29 @@ namespace DeMIPS
             }
 
         }
+
+        #region GUI events
+
+        private void ButtonSelectFile_Click(object sender, EventArgs e)
+        {
+            throw new Exception("Implemented!");
+        }
+
+        private void ButtonDecompile_Click(object sender, EventArgs e)
+        {
+            string filename = TextBoxFileName.Text;
+
+            if (File.Exists(filename))
+                Decompile(filename);
+            else
+                throw new Exception("Cannot load: " + filename + "!");
+        }
+
+        private void ButtonQuit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion
     }
 }

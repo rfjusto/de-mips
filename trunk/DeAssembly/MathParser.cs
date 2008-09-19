@@ -26,7 +26,7 @@ namespace DeMIPS
                         finalExpression = "0";
                         break;
                     default:
-                        throw new Exception("Invalid operand detected in SimplifyExpression!");
+                        throw new Exception("Invalid operand in SimplifyExpression with (0 OP 0) with " + finalExpression);
                 }
             }
             //A OP 0
@@ -38,7 +38,7 @@ namespace DeMIPS
                         finalExpression = first;
                         break;
                     default:
-                        throw new Exception("Invalid operand detected in SimplifyExpression!");
+                        throw new Exception("Invalid operand in SimplifyExpression (A OP 0) with " + finalExpression);
                 }
             }
             //0 OP A
@@ -49,10 +49,14 @@ namespace DeMIPS
                     case "+":
                         finalExpression = second;
                         break;
+                    case "*":
+                        finalExpression = "0";
+                        break;
                     default:
-                        throw new Exception("Invalid operand detected in SimplifyExpression!");
+                        throw new Exception("Invalid operand in SimplifyExpression (0 OP A) with " + finalExpression);
                 }
             }
+            //TODO: the final case, A OP B, cannot be simplified unless they are both constants.
             #endif
 
             return finalExpression;

@@ -29,6 +29,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+/* TODO:
+ * detected orphaned labels (e.g. jumps to labels that don't exist)
+ */
 
 namespace DeMIPS
 {
@@ -37,6 +40,8 @@ namespace DeMIPS
         #region variables
 
         private LinkedList<BlockVariable> variables;
+        private LinkedList<IProgramChunk> program;
+        private LinkedList<IProgramChunk> programOrphanJumpTargets;
 
         #endregion
 
@@ -48,6 +53,18 @@ namespace DeMIPS
             set { variables = value; }
         }
 
+        public LinkedList<IProgramChunk> Program
+        {
+            get { return program; }
+            set { program = value; }
+        }
+
+        public LinkedList<IProgramChunk> ProgramOrphanJumpTargets
+        {
+            get { return programOrphanJumpTargets; }
+            set { programOrphanJumpTargets = value; }
+        }
+
         #endregion
 
         #region constructor
@@ -55,6 +72,57 @@ namespace DeMIPS
         public ProgramBlock()
         {
             Variables = new LinkedList<BlockVariable>();
+            Program = new LinkedList<IProgramChunk>();
+            ProgramOrphanJumpTargets = new LinkedList<IProgramChunk>();
+        }
+
+        #endregion
+
+        #region general methods
+
+        public bool IsSane()
+        {
+            if (ProgramOrphanJumpTargets.Count > 0)
+                return false;
+
+            return true;
+        }
+
+        #endregion
+
+        #region jump and label methods
+
+        public void AddOrphanJumpTarget(ProgramChunkJumpTarget target)
+        {
+            ProgramOrphanJumpTargets.AddLast(((IProgramChunk)target));
+        }
+
+        public ProgramChunkJumpTarget GetOrphanJumpTargetByLabel(string label)
+        {
+            return GetJumpTargetByLabel(label, ProgramOrphanJumpTargets);
+        }
+
+        public void RemoveOrphanJumpTarget(ProgramChunkJumpTarget target)
+        {
+            ProgramOrphanJumpTargets.Remove(target);
+        }
+
+        public ProgramChunkJumpTarget GetJumpTargetByLabel(string label)
+        {
+            return GetJumpTargetByLabel(label, Program);
+        }
+
+        private ProgramChunkJumpTarget GetJumpTargetByLabel(string label, LinkedList<IProgramChunk> code)
+        {
+            foreach (IProgramChunk chunk in code)
+            {
+                if ((chunk is ProgramChunkJumpTarget) && ((ProgramChunkJumpTarget)chunk).Label.Equals(label))
+                {
+                    return (ProgramChunkJumpTarget)chunk;
+                }
+            }
+
+            return null;
         }
 
         #endregion

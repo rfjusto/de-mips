@@ -93,8 +93,8 @@ namespace DeMIPS
             ADDITION,
             SUBTRACTION,
             MULTIPLICATION,
-            DIVISION
-            //EQUAL?
+            DIVISION,
+            EQUAL
         }
     }
 }

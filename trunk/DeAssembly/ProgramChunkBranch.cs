@@ -4,6 +4,7 @@ using System.Text;
 
 namespace DeMIPS
 {
+    //TODO: Implement me!
     class ProgramChunkBranch : IProgramChunk
     {
         #region interface methods
@@ -15,5 +16,15 @@ namespace DeMIPS
         }
 
         #endregion
+    }
+
+    enum Equality
+    {
+        EQUAL,
+        NOT_EQUAL,
+        GREATER,
+        GREATER_OREQUAL,
+        LESSER,
+        LESSER_OREQUAL
     }
 }

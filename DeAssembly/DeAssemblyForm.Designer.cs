@@ -1,6 +1,6 @@
 ﻿namespace DeMIPS
 {
-    partial class Form1
+    partial class DeAssemblyForm
     {
         /// <summary>
         /// Required designer variable.
@@ -38,7 +38,9 @@
             this.ButtonQuit = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.LabelSynced = new System.Windows.Forms.Label();
+            this.TextBoxConsole = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // TextBoxOutput
@@ -137,21 +139,41 @@
             this.label4.TabIndex = 11;
             this.label4.Text = "Status:";
             // 
-            // label5
+            // LabelSynced
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(671, 41);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(53, 13);
-            this.label5.TabIndex = 12;
-            this.label5.Text = "Unknown";
+            this.LabelSynced.AutoSize = true;
+            this.LabelSynced.Location = new System.Drawing.Point(671, 41);
+            this.LabelSynced.Name = "LabelSynced";
+            this.LabelSynced.Size = new System.Drawing.Size(53, 13);
+            this.LabelSynced.TabIndex = 12;
+            this.LabelSynced.Text = "Unknown";
+            // 
+            // TextBoxConsole
+            // 
+            this.TextBoxConsole.Location = new System.Drawing.Point(15, 573);
+            this.TextBoxConsole.Multiline = true;
+            this.TextBoxConsole.Name = "TextBoxConsole";
+            this.TextBoxConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.TextBoxConsole.Size = new System.Drawing.Size(869, 78);
+            this.TextBoxConsole.TabIndex = 13;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(15, 551);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(115, 13);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Decompilation Results:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(898, 556);
-            this.Controls.Add(this.label5);
+            this.ClientSize = new System.Drawing.Size(898, 663);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.TextBoxConsole);
+            this.Controls.Add(this.LabelSynced);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.ButtonQuit);
@@ -182,7 +204,9 @@
         private System.Windows.Forms.Button ButtonQuit;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label LabelSynced;
+        private System.Windows.Forms.TextBox TextBoxConsole;
+        private System.Windows.Forms.Label label6;
     }
 }
 

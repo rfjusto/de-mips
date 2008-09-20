@@ -62,11 +62,11 @@ namespace DeMIPS
         /// TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
         /// </summary>
         /// <param name="code">Code to process.</param>
-        public void Preprocess(LinkedList<ProgramLine> code)
+        public void Preprocess(string[] file)
         {
             //TODO: split labels from code
-            UtilPreprocessor.PreprocessComments(code, "#");
-            UtilPreprocessor.PreprocessWhiteSpace(code);
+            UtilPreprocessor.PreprocessComments(file, "#");
+            UtilPreprocessor.PreprocessWhiteSpace(file);
         }
     }
 
@@ -74,6 +74,6 @@ namespace DeMIPS
     interface IFrontend
     {
         IProgramChunk TranslateLine(string assembly, ProgramBlock parentBlock);
-        void Preprocess(LinkedList<ProgramLine> code);
+        void Preprocess(string[] file);
     }
 }

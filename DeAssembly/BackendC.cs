@@ -33,7 +33,7 @@ namespace DeMIPS
             }
             else
             {
-                throw new Exception("BackendC: Unknown chunk in EmitChunk.");
+                throw new Exception("BackendC: Attempted to emit unknown IProgramChunk.");
             }
 
             return programLine;

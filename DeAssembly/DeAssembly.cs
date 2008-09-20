@@ -1,138 +1,93 @@
-﻿/////////////////////////////////////////////////////////////////////////
-//                                                                     //
-//    DeMIPS - A MIPS decompiler                                       //
-//                                                                     //
-//        Copyright (c) 2008 by Ruben Acuna and Michael Bradley        //
-//                                                                     //
-// This file is part of DeMIPS.                                        //
-//                                                                     //
-// DeMIPS is free software; you can redistribute it and/or             //
-// modify it under the terms of the GNU Lesser General Public          //
-// License as published by the Free Software Foundation; either        //
-// version 3 of the License, or (at your option) any later version.    //
-//                                                                     //
-// This library is distributed in the hope that it will be useful,     //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of      //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       //
-// GNU Lesser General Public License for more details.                 //
-//                                                                     //
-// You should have received a copy of the GNU Lesser General Public    //
-// License along with this library; if not, write to the Free Software //
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA           //
-// 02111-1307, USA, or contact the author(s):                          //
-//                                                                     //
-// Ruben Acuna <flyingfowlsoftware@earthlink.net>                      //
-// Michael Bradley                                                     //
-//                                                                     //
-/////////////////////////////////////////////////////////////////////////
-
-#define ENABLE_V4300I_INSTRUCTIONS
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.IO;
 
 namespace DeMIPS
 {
-    /// <summary>
-    /// Handles GUI events and components.
-    /// </summary>
-    public partial class Form1 : Form
+    class DeAssembly
     {
-        #region constants
-
-        private const string DEFAULT_FILENAME = "2-29.asm";
-        //private const string DEFAULT_FILENAME = "AlleyCat.asm";
-
-        #endregion
-
         #region variables
-
-        OpenFileDialog fileSelectionDialog;
 
         IFrontend activeFrontend;
         IBackend activeBackend;
 
         #endregion
 
-        /// <summary>
-        /// Initializes GUI and starts decompilation process.
-        /// </summary>
-        /// <param name="args">If args[0] exists, it will automatically be decompiled.</param>
-        public Form1(string[] args)
+        #region constuctor
+
+        public DeAssembly()
         {
-            InitializeComponent();
-
-            fileSelectionDialog = new OpenFileDialog();
-            fileSelectionDialog.Filter = "mips assembly (*.asm)|*.asm|All files (*.*)|*.*";
-
             activeFrontend = new FrontendMIPS();
             activeBackend = new BackendC();
-            
-            if (args.Length >= 1)
-                TextBoxFileName.Text = args[0];
-            else
-                TextBoxFileName.Text = DEFAULT_FILENAME;
+        }
 
-            ButtonDecompile_Click(null, null);
+        #endregion
+
+        #region methods
+
+        private string[] LoadAssemblyFile(string filename)
+        {
+            System.IO.StreamReader file = new System.IO.StreamReader(filename);
+            LinkedList<string> tempFile = new LinkedList<string>();
+            string tempLine;
+            string[] assemblyFile;
+
+            while ((tempLine = file.ReadLine()) != null)
+                tempFile.AddLast(tempLine.Trim().ToLower());
+
+            file.Close();
+
+            //convert linked list to string array
+            assemblyFile = new string[tempFile.Count];
+            tempFile.CopyTo(assemblyFile, 0);
+
+            return assemblyFile;
         }
 
         /// <summary>
         /// Decompiles file. Very hacked up.
         /// </summary>
         /// <param name="filename">Name to decompile</param>
-        public void Decompile(string filename) //TODO: move to proper file
+        public void Decompile(string filename, TextBox TextBoxInput, TextBox TextBoxOutput) //HACK: there should be a better way.
         {
-            System.IO.StreamReader file = new System.IO.StreamReader(filename);
-            LinkedList<ProgramLine> assemblyFile = new LinkedList<ProgramLine>();
-            string tempLine;
-            
-            while ((tempLine = file.ReadLine()) != null)
-                assemblyFile.AddLast(new ProgramLine(tempLine.ToLower()));
-
-            file.Close();
+            string[] assemblyFile = LoadAssemblyFile(filename);
+            ProgramBlock newBlock = new ProgramBlock();
 
             activeFrontend.Preprocess(assemblyFile);
 
-            string[] displayAsm = new string[assemblyFile.Count];
-            string[] displayCode = new string[assemblyFile.Count];
-            int i = 0;
-            //for(int i = 0; i < decompiledFile.Count; i++)
+            //HACK: slowly moving away from ProgramLine
+            LinkedList<ProgramLine> assemblyProgramLines = new LinkedList<ProgramLine>();
+            foreach(string line in assemblyFile)
+                assemblyProgramLines.AddLast(new ProgramLine(line.ToLower()));
 
-            foreach(object objLine in assemblyFile)
+            string[] displayCode = new string[assemblyProgramLines.Count];
+
+            int i = 0;
+
+            foreach (object objLine in assemblyProgramLines)
             {
                 ProgramLine line = (ProgramLine)objLine;
-                displayAsm[i] = line.Assembly;
 
-            #if RELEASE
                 try
                 {
                     DecompileLine(line);
                 }
-
                 catch (Exception err)
                 {
-                    MessageBox.Show(err.Message + "\n" + err.StackTrace, "An error has ocurred during decompilation!");
+                    UtilDebugConsole.AddException(err);
                 }
-            #else //DEBUG
-                DecompileLine(line);
-            #endif
 
                 displayCode[i] = line.Highlevel;
                 i++;
             }
 
-            if (displayAsm.Length != displayCode.Length)
-                MessageBox.Show("WARNING: The number of input and output lines differ, GUI may function incorrectly.");
+            if (assemblyFile.Length != displayCode.Length)
+                UtilDebugConsole.AddException(new ExceptionWarning("The number of input and output lines differ, GUI may function incorrectly."));
 
-            TextBoxInput.Lines = displayAsm;
+            //update GUI
+            TextBoxInput.Lines = assemblyFile;
             TextBoxOutput.Lines = displayCode;
-            TextBoxOutput.Select(0,0); //HACK: .NET automatically highlights text.
+            TextBoxOutput.Select(0, 0); //HACK: .NET automatically highlights text.
         }
 
         /// <summary>
@@ -213,13 +168,13 @@ namespace DeMIPS
                         processedLine = lineParameters[0] + " = " + lineParameters[1] + " | 0x" + lineParameters[2];//assuming immediate is in hex.
                         break;
 
-                    #if ENABLE_V4300I_INSTRUCTIONS
+#if ENABLE_V4300I_INSTRUCTIONS
 
                     //FYI: these will actually fall through to the next case.
                     case "sync": // we don't care about sync'ing memory.
                     case "cop0": // command involving coprocessor 0.
 
-                    #endif //ENABLE_V4300I_INSTRUCTIONS
+#endif //ENABLE_V4300I_INSTRUCTIONS
 
                     case "syscall": //fall through - we don't need this.
                     case "nop": // fall through - no opcode
@@ -230,7 +185,8 @@ namespace DeMIPS
                 }
 
                 if (processedLine.Equals("") && !line.Assembly.Equals(""))
-                    processedLine = "//Unidentified: \"" + line.Assembly + "\"";
+                    //processedLine = "//Unidentified: \"" + line.Assembly + "\"";
+                    throw new Exception ("//Unidentified: \"" + line.Assembly + "\"");
                 else if (!processedLine.Equals(""))
                     processedLine += ";";//TODO: move to C emitter or ProgramLine
 
@@ -238,36 +194,8 @@ namespace DeMIPS
             }
         }
 
-        #region GUI events
-
-        private void ButtonSelectFile_Click(object sender, EventArgs e)
-        {
-            if (fileSelectionDialog.ShowDialog() == DialogResult.OK)
-            {
-                TextBoxFileName.Text = fileSelectionDialog.FileName;
-                label5.Text = "Desynchronized";
-            }
-        }
-
-        private void ButtonDecompile_Click(object sender, EventArgs e)
-        {
-            string filename = TextBoxFileName.Text;
-
-            if (File.Exists(filename))
-            {
-                Decompile(filename);
-                label5.Text = "Synchronized";
-            }
-            else
-                MessageBox.Show("Cannot find: " + filename);
-        }
-
-        private void ButtonQuit_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         #endregion
 
+        
     }
 }

@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 /* TODO:
  * detected orphaned labels (e.g. jumps to labels that don't exist)
  */
@@ -59,7 +60,7 @@ namespace DeMIPS
             set { program = value; }
         }
 
-        public LinkedList<IProgramChunk> ProgramOrphanJumpTargets
+        private LinkedList<IProgramChunk> ProgramOrphanJumpTargets
         {
             get { return programOrphanJumpTargets; }
             set { programOrphanJumpTargets = value; }

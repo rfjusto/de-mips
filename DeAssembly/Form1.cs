@@ -55,6 +55,9 @@ namespace DeMIPS
 
         OpenFileDialog fileSelectionDialog;
 
+        IFrontend activeFrontend;
+        IBackend activeBackend;
+
         #endregion
 
         /// <summary>
@@ -67,6 +70,9 @@ namespace DeMIPS
 
             fileSelectionDialog = new OpenFileDialog();
             fileSelectionDialog.Filter = "mips assembly (*.asm)|*.asm|All files (*.*)|*.*";
+
+            activeFrontend = new FrontendMIPS();
+            activeBackend = new BackendC();
             
             if (args.Length >= 1)
                 TextBoxFileName.Text = args[0];
@@ -91,7 +97,7 @@ namespace DeMIPS
 
             file.Close();
 
-            FrontendMIPS.Preprocess(assemblyFile);
+            activeFrontend.Preprocess(assemblyFile);
 
             string[] displayAsm = new string[assemblyFile.Count];
             string[] displayCode = new string[assemblyFile.Count];
@@ -114,7 +120,7 @@ namespace DeMIPS
                     MessageBox.Show(err.Message + "\n" + err.StackTrace, "An error has ocurred during decompilation!");
                 }
             #else //DEBUG
-                DecompileLine(line, new ProgramChunkJumpUnconditional());
+                DecompileLine(line);
             #endif
 
                 displayCode[i] = line.Highlevel;
@@ -134,7 +140,7 @@ namespace DeMIPS
         /// reworking so I won't document much.
         /// </summary>
         /// <param name="line">Line to decompile.</param>
-        private void DecompileLine(ProgramLine line, IProgramChunk lineChunk) //TODO: finish moving to FrontendMIPS
+        private void DecompileLine(ProgramLine line) //TODO: finish moving to FrontendMIPS
         {
             //LABEL
             if (line.Assembly.Contains(":"))

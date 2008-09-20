@@ -12,8 +12,22 @@ namespace DeMIPS
 {
     class BackendC : IBackend
     {
-        //TODO: Implement me!
-        //public string[] EmitBlock() { }
+
+        public string[] EmitBlock(ProgramBlock block)
+        {
+            LinkedList<string> blockList = new LinkedList<string>();
+            string[] blockSource;
+
+            foreach (IProgramChunk chunk in block.Program)
+            {
+                blockList.AddLast(EmitChunk(chunk));
+            }
+
+            blockSource = new string[blockList.Count];
+            blockList.CopyTo(blockSource, 0);
+
+            return blockSource;
+        }
 
         public string EmitChunk(IProgramChunk chunk)
         {
@@ -29,11 +43,13 @@ namespace DeMIPS
             {
                 ProgramChunkJumpUnconditional activeChunk = (ProgramChunkJumpUnconditional)chunk;
 
-                programLine = "goto " + activeChunk.Target + ";";
+                programLine = "goto " + activeChunk.Target.Label + ";";
             }
             else
             {
-                throw new Exception("BackendC: Attempted to emit unknown IProgramChunk.");
+                UtilDebugConsole.AddException(new ExceptionWarning("BackendC: No operation IProgramChunk found."));
+
+                programLine = "//NOP";
             }
 
             return programLine;
@@ -43,6 +59,7 @@ namespace DeMIPS
     //FUTURE: Setting up for supporting more than C.
     interface IBackend
     {
+        string[] EmitBlock(ProgramBlock block);
         string EmitChunk(IProgramChunk chunk);
     }
 }

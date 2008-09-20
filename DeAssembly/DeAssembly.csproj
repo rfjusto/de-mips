@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BackendC.cs" />
+    <Compile Include="ProgramChunkNoOperation.cs" />
     <Compile Include="FrontendMIPS.cs" />
     <Compile Include="IProgramChunk.cs" />
     <Compile Include="DeAssemblyForm.cs">
@@ -71,7 +72,6 @@
     <Compile Include="ProgramChunkBranch.cs" />
     <Compile Include="ProgramChunkJumpTarget.cs" />
     <Compile Include="ProgramChunkJumpUnconditional.cs" />
-    <Compile Include="ProgramLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DeAssemblyForm.resx">
       <DependentUpon>DeAssemblyForm.cs</DependentUpon>

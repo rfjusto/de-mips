@@ -11,7 +11,7 @@ namespace DeMIPS
         /// </summary>
         /// <param name="code">Code to process.</param>
         /// <param name="commentMarker">Character(s) that mark regions of comments.</param>
-        static public void PreprocessComments(string[] code, string commentMarker) //TODO: move to proper file
+        static public void PreprocessComments(string[] code, string commentMarker)
         {
             for(int i = 0; i < code.Length; i++)
             {

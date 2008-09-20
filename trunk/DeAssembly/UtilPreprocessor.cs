@@ -11,12 +11,12 @@ namespace DeMIPS
         /// </summary>
         /// <param name="code">Code to process.</param>
         /// <param name="commentMarker">Character(s) that mark regions of comments.</param>
-        static public void PreprocessComments(LinkedList<ProgramLine> code, string commentMarker) //TODO: move to proper file
+        static public void PreprocessComments(string[] code, string commentMarker) //TODO: move to proper file
         {
-            foreach (ProgramLine line in code)
+            for(int i = 0; i < code.Length; i++)
             {
-                if (line.Assembly.Contains(commentMarker))
-                    line.Assembly = line.Assembly.Substring(0, line.Assembly.IndexOf(commentMarker)).Trim();
+                if (code[i].Contains(commentMarker))
+                    code[i] = code[i].Substring(0, code[i].IndexOf(commentMarker)).Trim();
             }
         }
 
@@ -24,23 +24,21 @@ namespace DeMIPS
         /// Reconstructs each line to include only one space between tokens.
         /// </summary>
         /// <param name="code">Code to process.</param>
-        static public void PreprocessWhiteSpace(LinkedList<ProgramLine> code)
+        static public void PreprocessWhiteSpace(string[] code)
         {
-            foreach (ProgramLine line in code)
+            for(int i = 0; i < code.Length; i++)
             {
+                string[] lineTokens = code[i].Split(' ');
                 string processedLine = "";
-                string[] lineTokens = line.Assembly.Split(' ');
-
+                
                 foreach (string token in lineTokens)
                     if (!token.Trim().Equals(""))
                         processedLine += token + " ";
 
                 processedLine = processedLine.Trim(); //HACK: the above line always leaves a trailing space.
-
-                line.Assembly = processedLine;
+                code[i] = processedLine;
 
             }
-
         }
     }
 }

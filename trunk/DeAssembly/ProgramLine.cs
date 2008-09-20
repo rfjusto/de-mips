@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DeMIPS
 {
-    class ProgramLine
+    public class ProgramLine
     {
         private string assembly;
         private string highlevel;

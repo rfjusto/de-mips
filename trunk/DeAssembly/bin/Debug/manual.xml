@@ -4,19 +4,14 @@
         <name>DeMIPS</name>
     </assembly>
     <members>
-        <member name="M:DeMIPS.Program.Main(System.String[])">
-            <summary>
-            The main entry point for the application.
-            </summary>
-        </member>
-        <member name="M:DeMIPS.UtilPreprocessor.PreprocessComments(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine},System.String)">
+        <member name="M:DeMIPS.UtilPreprocessor.PreprocessComments(System.String[],System.String)">
             <summary>
             Splits a lines into code and comment portions.
             </summary>
             <param name="code">Code to process.</param>
             <param name="commentMarker">Character(s) that mark regions of comments.</param>
         </member>
-        <member name="M:DeMIPS.UtilPreprocessor.PreprocessWhiteSpace(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine})">
+        <member name="M:DeMIPS.UtilPreprocessor.PreprocessWhiteSpace(System.String[])">
             <summary>
             Reconstructs each line to include only one space between tokens.
             </summary>
@@ -29,47 +24,6 @@
             </summary>
             <param name="number">Integer to convert.</param>
             <returns>String containing hexadecimal verions of input.</returns>
-        </member>
-        <member name="T:DeMIPS.Form1">
-            <summary>
-            Handles GUI events and components.
-            </summary>
-        </member>
-        <member name="M:DeMIPS.Form1.#ctor(System.String[])">
-            <summary>
-            Initializes GUI and starts decompilation process.
-            </summary>
-            <param name="args">If args[0] exists, it will automatically be decompiled.</param>
-        </member>
-        <member name="M:DeMIPS.Form1.Decompile(System.String)">
-            <summary>
-            Decompiles file. Very hacked up.
-            </summary>
-            <param name="filename">Name to decompile</param>
-        </member>
-        <member name="M:DeMIPS.Form1.DecompileLine(DeMIPS.ProgramLine)">
-            <summary>
-            This decompiles a single line of MIPS to C. This will be requiring heavy
-            reworking so I won't document much.
-            </summary>
-            <param name="line">Line to decompile.</param>
-        </member>
-        <member name="F:DeMIPS.Form1.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:DeMIPS.Form1.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:DeMIPS.Form1.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
         </member>
         <member name="T:DeMIPS.Properties.Resources">
             <summary>
@@ -87,11 +41,57 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <member name="M:DeMIPS.FrontendMIPS.Preprocess(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine})">
+        <member name="M:DeMIPS.FrontendMIPS.Preprocess(System.String[])">
             <summary>
             TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
             </summary>
             <param name="code">Code to process.</param>
+        </member>
+        <member name="M:DeMIPS.DeAssembly.Decompile(System.String,System.Windows.Forms.TextBox,System.Windows.Forms.TextBox)">
+            <summary>
+            Decompiles file. Very hacked up.
+            </summary>
+            <param name="filename">Name to decompile</param>
+        </member>
+        <member name="M:DeMIPS.DeAssembly.DecompileLine(DeMIPS.ProgramLine)">
+            <summary>
+            This decompiles a single line of MIPS to C. This will be requiring heavy
+            reworking so I won't document much.
+            </summary>
+            <param name="line">Line to decompile.</param>
+        </member>
+        <member name="T:DeMIPS.DeAssemblyForm">
+            <summary>
+            Handles GUI events and components.
+            </summary>
+        </member>
+        <member name="M:DeMIPS.DeAssemblyForm.Main(System.String[])">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="M:DeMIPS.DeAssemblyForm.#ctor(System.String[])">
+            <summary>
+            Initializes GUI and starts decompilation process.
+            </summary>
+            <param name="args">If args[0] exists, it will automatically be decompiled.</param>
+        </member>
+        <member name="F:DeMIPS.DeAssemblyForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:DeMIPS.DeAssemblyForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DeMIPS.DeAssemblyForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
         </member>
     </members>
 </doc>

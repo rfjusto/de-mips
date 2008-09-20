@@ -46,8 +46,8 @@ namespace DeMIPS
     {
         #region constants
 
-        //private const string DEFAULT_FILENAME = "2-29.asm";
-        private const string DEFAULT_FILENAME = "AlleyCat.asm";
+        private const string DEFAULT_FILENAME = "2-29.asm";
+        //private const string DEFAULT_FILENAME = "AlleyCat.asm";
 
         #endregion
 
@@ -83,21 +83,24 @@ namespace DeMIPS
         public void Decompile(string filename) //TODO: move to proper file
         {
             System.IO.StreamReader file = new System.IO.StreamReader(filename);
-            LinkedList<ProgramLine> decompiledFile = new LinkedList<ProgramLine>();
+            LinkedList<ProgramLine> assemblyFile = new LinkedList<ProgramLine>();
             string tempLine;
             
             while ((tempLine = file.ReadLine()) != null)
-                decompiledFile.AddLast(new ProgramLine(tempLine.ToLower()));
+                assemblyFile.AddLast(new ProgramLine(tempLine.ToLower()));
 
             file.Close();
 
-            PreprocessFile(decompiledFile);
+            FrontendMIPS.Preprocess(assemblyFile);
 
-            string[] displayAsm = new string[decompiledFile.Count];
-            string[] displayCode = new string[decompiledFile.Count];
+            string[] displayAsm = new string[assemblyFile.Count];
+            string[] displayCode = new string[assemblyFile.Count];
             int i = 0;
-            foreach(ProgramLine line in decompiledFile)
+            //for(int i = 0; i < decompiledFile.Count; i++)
+
+            foreach(object objLine in assemblyFile)
             {
+                ProgramLine line = (ProgramLine)objLine;
                 displayAsm[i] = line.Assembly;
 
             #if RELEASE
@@ -111,7 +114,7 @@ namespace DeMIPS
                     MessageBox.Show(err.Message + "\n" + err.StackTrace, "An error has ocurred during decompilation!");
                 }
             #else //DEBUG
-                DecompileLine(line);
+                DecompileLine(line, new ProgramChunkJumpUnconditional());
             #endif
 
                 displayCode[i] = line.Highlevel;
@@ -119,7 +122,7 @@ namespace DeMIPS
             }
 
             if (displayAsm.Length != displayCode.Length)
-                MessageBox.Show("WARNNING: The number of input and output lines differ, GUI may function incorrectly.");
+                MessageBox.Show("WARNING: The number of input and output lines differ, GUI may function incorrectly.");
 
             TextBoxInput.Lines = displayAsm;
             TextBoxOutput.Lines = displayCode;
@@ -131,11 +134,13 @@ namespace DeMIPS
         /// reworking so I won't document much.
         /// </summary>
         /// <param name="line">Line to decompile.</param>
-        private void DecompileLine(IProgramChunk line) //TODO: move to proper file
+        private void DecompileLine(ProgramLine line, IProgramChunk lineChunk) //TODO: finish moving to FrontendMIPS
         {
             //LABEL
             if (line.Assembly.Contains(":"))
+            {
                 line.Highlevel = line.Assembly;//TODO: move to C emitter?
+            }
             //COMMAND
             else
             {
@@ -175,7 +180,7 @@ namespace DeMIPS
 
                     case "sllv": //fall through, MathParser will still simplify it.  V4300i extention.
                     case "sll":
-                        if(lineParameters[2].Contains("$"))
+                        if (lineParameters[2].Contains("$"))
                             throw new Exception("Unexpected variable.");
                         //HACK: at this point, we know para[2] is a constant. Since this is a bit shift we need to multiple that value by 2.
                         //      the program is that at this point var's and constants are stored as strings. :(
@@ -195,84 +200,36 @@ namespace DeMIPS
                         break;
 
                     case "andi":
-                    	processedLine = lineParameters[0] + " = " + lineParameters[1] + " & 0x" + lineParameters[2];//assuming immediate is in hex.
+                        processedLine = lineParameters[0] + " = " + lineParameters[1] + " & 0x" + lineParameters[2];//assuming immediate is in hex.
                         break;
 
                     case "ori":
-                    	processedLine = lineParameters[0] + " = " + lineParameters[1] + " | 0x" + lineParameters[2];//assuming immediate is in hex.
-                    	break;
+                        processedLine = lineParameters[0] + " = " + lineParameters[1] + " | 0x" + lineParameters[2];//assuming immediate is in hex.
+                        break;
 
-#if ENABLE_V4300I_INSTRUCTIONS
+                    #if ENABLE_V4300I_INSTRUCTIONS
 
                     //FYI: these will actually fall through to the next case.
                     case "sync": // we don't care about sync'ing memory.
                     case "cop0": // command involving coprocessor 0.
-#endif
+
+                    #endif //ENABLE_V4300I_INSTRUCTIONS
+
                     case "syscall": //fall through - we don't need this.
-                    case "nop" : // fall through - no opcode
+                    case "nop": // fall through - no opcode
                     case "???": //fall through - we don't need this. Disassembler specific.
                         processedLine = "//" + lineKeyword;
-                    	break;
+                        break;
 
                 }
 
-                if(processedLine.Equals("") && !line.Assembly.Equals(""))
+                if (processedLine.Equals("") && !line.Assembly.Equals(""))
                     processedLine = "//Unidentified: \"" + line.Assembly + "\"";
                 else if (!processedLine.Equals(""))
                     processedLine += ";";//TODO: move to C emitter or ProgramLine
 
                 line.Highlevel = processedLine;
             }
-        }
-
-
-        /// <summary>
-        /// TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
-        /// </summary>
-        /// <param name="code">Code to process.</param>
-        private void PreprocessFile(LinkedList<ProgramLine> code)//TODO: move to proper file
-        {
-            PreprocessComments(code);
-            PreprocessWhiteSpace(code);
-        }
-
-        /// <summary>
-        /// Splits a lines into code and comment portions.
-        /// </summary>
-        /// <param name="code">Code to process.</param>
-        private void PreprocessComments(LinkedList<ProgramLine> code) //TODO: move to proper file
-        {
-            foreach (ProgramLine line in code)
-            {
-                if (line.Assembly.Contains("#"))
-                {
-                    line.AssemblyComment = line.Assembly.Substring(line.Assembly.IndexOf('#') + 1); //strips # character
-                    line.Assembly = line.Assembly.Substring(0, line.Assembly.IndexOf('#')).Trim();                 
-                }
-            }
-        }
-
-        /// <summary>
-        /// Reconstructs each line to include only one space between tokens.
-        /// </summary>
-        /// <param name="code">Code to process.</param>
-        private void PreprocessWhiteSpace(LinkedList<ProgramLine> code)
-        {
-            foreach (ProgramLine line in code)
-            {
-                string processedLine = "";
-                string[] lineTokens = line.Assembly.Split(' ');
-
-                foreach (string token in lineTokens)
-                    if (!token.Trim().Equals(""))
-                        processedLine += token + " ";
-
-                processedLine = processedLine.Trim(); //HACK: the above line always leaves a trailing space.
-
-                line.Assembly = processedLine;
-
-            }
-
         }
 
         #region GUI events
@@ -305,7 +262,6 @@ namespace DeMIPS
         }
 
         #endregion
-
 
     }
 }

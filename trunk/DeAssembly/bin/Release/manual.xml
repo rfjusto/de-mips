@@ -26,30 +26,12 @@
             </summary>
             <param name="filename">Name to decompile</param>
         </member>
-        <member name="M:DeMIPS.Form1.DecompileLine(DeMIPS.IProgramChunk)">
+        <member name="M:DeMIPS.Form1.DecompileLine(DeMIPS.ProgramLine,DeMIPS.IProgramChunk)">
             <summary>
             This decompiles a single line of MIPS to C. This will be requiring heavy
             reworking so I won't document much.
             </summary>
             <param name="line">Line to decompile.</param>
-        </member>
-        <member name="M:DeMIPS.Form1.PreprocessFile(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine})">
-            <summary>
-            TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
-            </summary>
-            <param name="code">Code to process.</param>
-        </member>
-        <member name="M:DeMIPS.Form1.PreprocessComments(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine})">
-            <summary>
-            Splits a lines into code and comment portions.
-            </summary>
-            <param name="code">Code to process.</param>
-        </member>
-        <member name="M:DeMIPS.Form1.PreprocessWhiteSpace(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine})">
-            <summary>
-            Reconstructs each line to include only one space between tokens.
-            </summary>
-            <param name="code">Code to process.</param>
         </member>
         <member name="F:DeMIPS.Form1.components">
             <summary>
@@ -83,6 +65,33 @@
               Overrides the current thread's CurrentUICulture property for all
               resource lookups using this strongly typed resource class.
             </summary>
+        </member>
+        <member name="M:DeMIPS.FrontendMIPS.Preprocess(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine})">
+            <summary>
+            TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
+            </summary>
+            <param name="code">Code to process.</param>
+        </member>
+        <member name="M:DeMIPS.UtilPreprocessor.PreprocessComments(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine},System.String)">
+            <summary>
+            Splits a lines into code and comment portions.
+            </summary>
+            <param name="code">Code to process.</param>
+            <param name="commentMarker">Character(s) that mark regions of comments.</param>
+        </member>
+        <member name="M:DeMIPS.UtilPreprocessor.PreprocessWhiteSpace(System.Collections.Generic.LinkedList{DeMIPS.ProgramLine})">
+            <summary>
+            Reconstructs each line to include only one space between tokens.
+            </summary>
+            <param name="code">Code to process.</param>
+        </member>
+        <member name="M:DeMIPS.UtilGeneral.DecimalToHexadecimal(System.Int32)">
+            <summary>
+            Converts a integer to a string by returning its hexadecimal value
+            as a string. The form will be "0xHHHH".
+            </summary>
+            <param name="number">Integer to convert.</param>
+            <returns>String containing hexadecimal verions of input.</returns>
         </member>
     </members>
 </doc>

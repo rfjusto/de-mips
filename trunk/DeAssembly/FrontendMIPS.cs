@@ -13,7 +13,7 @@ namespace DeMIPS
             //***LABELS***
             if (assembly.Contains(":"))
             {
-                string labelName = assembly.Substring(assembly.IndexOf(":"));
+                string labelName = assembly.Substring(0, assembly.IndexOf(":"));
 
                 //label does not exist as an orphan
                 if(parentBlock.GetOrphanJumpTargetByLabel(labelName) == null)
@@ -52,10 +52,13 @@ namespace DeMIPS
                 }
             }
 
-            if(translatedChunk != null)
-                return translatedChunk;
-            else
-                throw new Exception("FrontendMIPS: Unidentified assembly encountered during translation.");
+            if (translatedChunk == null)
+            {
+                translatedChunk = new ProgramChunkNoOperation();
+                UtilDebugConsole.AddException(new Exception("FrontendMIPS - Unidentified assembly encountered during translation."));
+            }
+
+            return translatedChunk;
         }
 
         /// <summary>

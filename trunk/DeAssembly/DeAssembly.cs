@@ -25,7 +25,7 @@ namespace DeMIPS
 
         #region methods
 
-        private string[] LoadAssemblyFile(string filename)
+        public string[] LoadAssemblyFile(string filename)
         {
             System.IO.StreamReader file = new System.IO.StreamReader(filename);
             LinkedList<string> tempFile = new LinkedList<string>();
@@ -48,48 +48,40 @@ namespace DeMIPS
         /// Decompiles file. Very hacked up.
         /// </summary>
         /// <param name="filename">Name to decompile</param>
-        public void Decompile(string filename, TextBox TextBoxInput, TextBox TextBoxOutput) //HACK: there should be a better way.
+        public void DecompileAssembly(string[] assemblyFile, TextBox TextBoxInput, TextBox TextBoxOutput) //HACK: there should be a better way.
         {
-            string[] assemblyFile = LoadAssemblyFile(filename);
+            //string[] assemblyFile = LoadAssemblyFile(filename);
             ProgramBlock newBlock = new ProgramBlock();
 
             activeFrontend.Preprocess(assemblyFile);
-
-            //HACK: slowly moving away from ProgramLine
-            LinkedList<ProgramLine> assemblyProgramLines = new LinkedList<ProgramLine>();
+            
             foreach(string line in assemblyFile)
-                assemblyProgramLines.AddLast(new ProgramLine(line.ToLower()));
-
-            string[] displayCode = new string[assemblyProgramLines.Count];
-
-            int i = 0;
-
-            foreach (object objLine in assemblyProgramLines)
             {
-                ProgramLine line = (ProgramLine)objLine;
-
                 try
                 {
-                    DecompileLine(line);
+                    newBlock.Program.AddLast(activeFrontend.TranslateLine(line, newBlock));
                 }
                 catch (Exception err)
                 {
                     UtilDebugConsole.AddException(err);
                 }
-
-                displayCode[i] = line.Highlevel;
-                i++;
             }
 
-            if (assemblyFile.Length != displayCode.Length)
+            string[] sourceFile = activeBackend.EmitBlock(newBlock);
+
+            if(!newBlock.IsSane())
+                UtilDebugConsole.AddException(new ExceptionWarning(""));
+
+
+            if (assemblyFile.Length != sourceFile.Length)
                 UtilDebugConsole.AddException(new ExceptionWarning("The number of input and output lines differ, GUI may function incorrectly."));
 
             //update GUI
             TextBoxInput.Lines = assemblyFile;
-            TextBoxOutput.Lines = displayCode;
+            TextBoxOutput.Lines = sourceFile;
             TextBoxOutput.Select(0, 0); //HACK: .NET automatically highlights text.
         }
-
+/*
         /// <summary>
         /// This decompiles a single line of MIPS to C. This will be requiring heavy
         /// reworking so I won't document much.
@@ -193,6 +185,7 @@ namespace DeMIPS
                 line.Highlevel = processedLine;
             }
         }
+*/
 
         #endregion
 

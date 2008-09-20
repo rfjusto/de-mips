@@ -115,10 +115,13 @@ namespace DeMIPS
             {
                 UtilDebugConsole.Flush();
 
-                myDecompiler.Decompile(filename, TextBoxInput, TextBoxOutput);
+                myDecompiler.DecompileAssembly(myDecompiler.LoadAssemblyFile(filename), TextBoxInput, TextBoxOutput);
 
                 LabelSynced.Text = "Synchronized";
                 TextBoxConsole.Lines = UtilDebugConsole.GetAsArray();
+
+                //TODO: make TextBoxConsole auto scroll down.
+                TextBoxConsole.ScrollToCaret();
             }
             else
                 MessageBox.Show("Cannot find: " + filename);

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+//NOTE: this class is currently unused.
 namespace DeMIPS
 {
     class MathParser

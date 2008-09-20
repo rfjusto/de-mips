@@ -30,10 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-/* TODO:
- * detected orphaned labels (e.g. jumps to labels that don't exist)
- */
-
 namespace DeMIPS
 {
     class ProgramBlock

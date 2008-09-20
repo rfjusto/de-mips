@@ -154,7 +154,7 @@
             this.TextBoxConsole.Multiline = true;
             this.TextBoxConsole.Name = "TextBoxConsole";
             this.TextBoxConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextBoxConsole.Size = new System.Drawing.Size(869, 78);
+            this.TextBoxConsole.Size = new System.Drawing.Size(869, 89);
             this.TextBoxConsole.TabIndex = 13;
             // 
             // label6
@@ -166,11 +166,11 @@
             this.label6.TabIndex = 14;
             this.label6.Text = "Decompilation Results:";
             // 
-            // Form1
+            // DeAssemblyForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(898, 663);
+            this.ClientSize = new System.Drawing.Size(898, 674);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.TextBoxConsole);
             this.Controls.Add(this.LabelSynced);
@@ -185,7 +185,7 @@
             this.Controls.Add(this.TextBoxInput);
             this.Controls.Add(this.TextBoxOutput);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "Form1";
+            this.Name = "DeAssemblyForm";
             this.Text = "DeMIPS - v0.1 alpha";
             this.ResumeLayout(false);
             this.PerformLayout();

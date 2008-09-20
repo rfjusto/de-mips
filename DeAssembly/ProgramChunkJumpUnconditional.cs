@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DeMIPS
 {
-    class ProgramChunkBranch : IProgramChunk
+    class ProgramChunkJumpUnconditional : IProgramChunk
     {
         #region interface methods
 

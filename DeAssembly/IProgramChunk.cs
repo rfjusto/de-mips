@@ -6,16 +6,6 @@ namespace DeMIPS
 {
     interface IProgramChunk
     {
-        string Assembly//HACK: just getting it to build
-        {
-            get;
-            set;
-        }
-
-        string Highlevel//HACK: just getting it to build
-        {
-            get;
-            set;
-        }
+        bool UsesVariable(BlockVariable variable);
     }
 }

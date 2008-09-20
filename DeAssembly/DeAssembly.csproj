@@ -56,6 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackendC.cs" />
+    <Compile Include="FrontendMIPS.cs" />
     <Compile Include="IProgramChunk.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -67,7 +69,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="ProgramBlock.cs" />
     <Compile Include="ProgramChunkBranch.cs" />
-    <Compile Include="ProgramChunkUnconditionalJump.cs" />
+    <Compile Include="ProgramChunkJumpTarget.cs" />
+    <Compile Include="ProgramChunkJumpUnconditional.cs" />
     <Compile Include="ProgramLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -93,6 +96,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="UtilGeneral.cs" />
+    <Compile Include="UtilPreprocessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">

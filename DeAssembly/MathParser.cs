@@ -87,5 +87,14 @@ namespace DeMIPS
             return finalEquals;
         
         }
+
+        enum ArithmeticOperand
+        {
+            ADDITION,
+            SUBTRACTION,
+            MULTIPLICATION,
+            DIVISION
+            //EQUAL?
+        }
     }
 }

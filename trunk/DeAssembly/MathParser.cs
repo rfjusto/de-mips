@@ -1,4 +1,31 @@
-﻿//DEBUG SETTINGS
+﻿/////////////////////////////////////////////////////////////////////////
+//                                                                     //
+//    DeMIPS - A MIPS decompiler                                       //
+//                                                                     //
+//        Copyright (c) 2008 by Ruben Acuna and Michael Bradley        //
+//                                                                     //
+// This file is part of DeMIPS.                                        //
+//                                                                     //
+// DeMIPS is free software; you can redistribute it and/or             //
+// modify it under the terms of the GNU Lesser General Public          //
+// License as published by the Free Software Foundation; either        //
+// version 3 of the License, or (at your option) any later version.    //
+//                                                                     //
+// This library is distributed in the hope that it will be useful,     //
+// but WITHOUT ANY WARRANTY; without even the implied warranty of      //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       //
+// GNU Lesser General Public License for more details.                 //
+//                                                                     //
+// You should have received a copy of the GNU Lesser General Public    //
+// License along with this library; if not, write to the Free Software //
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA           //
+// 02111-1307, USA, or contact the author(s):                          //
+//                                                                     //
+// Ruben Acuna <flyingfowlsoftware@earthlink.net>                      //
+//                                                                     //
+/////////////////////////////////////////////////////////////////////////
+
+//DEBUG SETTINGS
 #define ENABLE__SIMPLIFY_ARITHMETIC
 #define ENABLE__SIMPLIFY_EQUAL
 
@@ -27,7 +54,7 @@ namespace DeMIPS
                         finalExpression = "0";
                         break;
                     default:
-                        throw new Exception("Invalid operand in SimplifyExpression with (0 OP 0) with " + finalExpression);
+                        throw new Exception("Math Parser: Invalid operand in SimplifyExpression with (0 OP 0) with " + finalExpression);
                 }
             }
             //A OP 0
@@ -39,7 +66,7 @@ namespace DeMIPS
                         finalExpression = first;
                         break;
                     default:
-                        throw new Exception("Invalid operand in SimplifyExpression (A OP 0) with " + finalExpression);
+                        throw new Exception("MathParser - Invalid operand in SimplifyExpression (A OP 0) with " + finalExpression);
                 }
             }
             //0 OP A
@@ -54,7 +81,7 @@ namespace DeMIPS
                         finalExpression = "0";
                         break;
                     default:
-                        throw new Exception("Invalid operand in SimplifyExpression (0 OP A) with " + finalExpression);
+                        throw new Exception("MathParser - Invalid operand in SimplifyExpression (0 OP A) with " + finalExpression);
                 }
             }
             //TODO: the final case, A OP B, cannot be simplified unless they are both constants.
@@ -87,15 +114,6 @@ namespace DeMIPS
 
             return finalEquals;
         
-        }
-
-        enum ArithmeticOperand
-        {
-            ADDITION,
-            SUBTRACTION,
-            MULTIPLICATION,
-            DIVISION,
-            EQUAL
         }
     }
 }

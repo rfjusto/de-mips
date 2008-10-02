@@ -46,7 +46,7 @@ namespace DeMIPS
     {
         #region constants
 
-        private const string DEFAULT_FILENAME = "2-29.asm";
+        private const string DEFAULT_FILENAME = "2-30.asm";
         //private const string DEFAULT_FILENAME = "AlleyCat.asm";
 
         #endregion
@@ -114,9 +114,11 @@ namespace DeMIPS
             if (File.Exists(filename))
             {
                 UtilDebugConsole.Flush();
+                string[] assemblySource = myDecompiler.LoadAssemblyFile(filename);
 
-                myDecompiler.DecompileAssembly(myDecompiler.LoadAssemblyFile(filename), TextBoxInput, TextBoxOutput);
+                myDecompiler.DecompileAssembly(assemblySource, TextBoxOutput);
 
+                TextBoxInput.Lines = assemblySource;
                 LabelSynced.Text = "Synchronized";
                 TextBoxConsole.Lines = UtilDebugConsole.GetAsArray();
 

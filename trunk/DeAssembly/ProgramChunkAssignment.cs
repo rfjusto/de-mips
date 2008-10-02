@@ -31,39 +31,61 @@ using System.Text;
 
 namespace DeMIPS
 {
-    class UtilPreprocessor
+    /// <summary>
+    /// This stores an expression in the form of 
+    /// variable = expression, where variable and expression
+    /// are objects.
+    /// </summary>
+    class ProgramChunkAssignment : IProgramChunk
     {
-        /// <summary>
-        /// Splits a lines into code and comment portions.
-        /// </summary>
-        /// <param name="code">Code to process.</param>
-        /// <param name="commentMarker">Character(s) that mark regions of comments.</param>
-        static public void PreprocessComments(string[] code, string commentMarker)
+        #region variables
+
+        private BlockVariable variable;
+        private ProgramChunkExpression expression;
+
+        #endregion
+
+        #region properties
+
+        public BlockVariable Variable
         {
-            for(int i = 0; i < code.Length; i++)
-            {
-                if (code[i].Contains(commentMarker))
-                    code[i] = code[i].Substring(0, code[i].IndexOf(commentMarker)).Trim();
-            }
+            get { return variable; }
+            set { variable = value; }
         }
 
-        /// <summary>
-        /// Reconstructs each line to include only one space between tokens.
-        /// </summary>
-        /// <param name="code">Code to process.</param>
-        static public void PreprocessWhiteSpace(string[] code)
+        public ProgramChunkExpression Expression
         {
-            for(int i = 0; i < code.Length; i++)
-            {
-                string[] lineTokens = code[i].Split(' ');
-                string processedLine = "";
-                
-                foreach (string token in lineTokens)
-                    if (!token.Trim().Equals(""))
-                        processedLine += token + " ";
-
-                code[i] = processedLine.Trim(); //HACK: the above line always leaves a trailing space.
-            }
+            get { return expression; }
+            set { expression = value; }
         }
+
+        #endregion
+
+        #region constructor
+
+        //NOTE: we only allow the assignment to a variable, constants
+        //      can't change value.
+        public ProgramChunkAssignment(BlockVariable variable, ProgramChunkExpression expression)
+        {
+            Variable = variable;
+            Expression = expression;
+        }
+
+        #endregion
+
+        #region interface methods
+
+        public bool UsesVariable(BlockVariable variable)
+        {
+            if(Variable.Equals(variable))
+                return true;
+
+            if(Expression.Equals(variable))
+                return true;
+
+            return false;
+        }
+
+        #endregion
     }
 }

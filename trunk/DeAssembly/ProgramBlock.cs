@@ -22,7 +22,6 @@
 // 02111-1307, USA, or contact the author(s):                          //
 //                                                                     //
 // Ruben Acuna <flyingfowlsoftware@earthlink.net>                      //
-// Michael Bradley                                                     //
 //                                                                     //
 /////////////////////////////////////////////////////////////////////////
 
@@ -157,15 +156,50 @@ namespace DeMIPS
             return null;
         }
 
+        /// <summary>
+        /// Searches for variable in the pool of local variables. 
+        /// If it doesn't exist, create a new one, add it to the
+        /// pool, and return it.
+        /// </summary>
+        /// <param name="name">Variable name.</param>
+        /// <returns>BlockVariable. Never null.</returns>
+        public BlockVariable GetVariableByNameForced(string name)
+        {
+            BlockVariable variable = GetVariableByName(name);
+
+            if (variable == null)
+            {
+                variable = new BlockVariable(name);
+                AddVariable(variable);
+            }
+
+            return variable;
+        }
+
+        #endregion
+
+        #region debug methods
+
         #endregion
     }
 
-    class BlockVariable
+    //TODO: implement me!??!?!
+    class BlockVariableTerm : BlockVariable, ProgramChunkExpressionTerm
+    {
+        public BlockVariableTerm(string name) : base (name)
+        {
+
+        }
+    }
+
+    class BlockVariable : ProgramChunkExpressionTerm
     {
         #region variables
 
         private string name;
         private VariableType type;
+        private VariableSource source;
+        private Operand op;
 
         #endregion
 
@@ -183,14 +217,38 @@ namespace DeMIPS
             set { type = value; }
         }
 
+        public VariableSource Source
+        {
+            get { return source; }
+            set { source = value; }
+        }
+
+        public Operand Operator//<----------------------------------------WRONGWRONGWRONG!!!!!!!!WRONG!! BLAH! :S
+        {
+            get { return op; }
+            set { op = value; }
+        }
+
         #endregion
 
         #region constructor
 
-        public BlockVariable(string myName, VariableType myType)
+        public BlockVariable(string name)
+            : this(name, Operand.ADDITION, VariableType.UNDEFINED, VariableSource.UNDEFINED)
         {
-            Name = myName;
-            Type = myType;
+        }
+
+        public BlockVariable(string name, VariableType type, VariableSource source)
+            : this(name, Operand.ADDITION, type, source)
+        {
+        }
+
+        public BlockVariable(string name, Operand op, VariableType type, VariableSource source)
+        {
+            Name = name;
+            Type = type;
+            Source = source;
+            Operator = op;
         }
 
         #endregion
@@ -199,10 +257,23 @@ namespace DeMIPS
 
         public bool Equals(BlockVariable variable)
         {
-            if (this.Name.Equals(variable.Name) && this.Type.Equals(variable.Type))
+            if (this.Name.Equals(variable.Name))
+            {
+                if (this.Type.Equals(variable.Type) || !(variable.Type == VariableType.UNDEFINED))
+                    if (this.Source.Equals(variable.Source) || !(variable.Source == VariableSource.UNDEFINED))
+                        return true;
+            }
+            
+            return false;
+        }
+
+        public bool UsesVariable(BlockVariable variable)
+        {
+            //equals shouldn't be used here but that would be more standard
+            if (Name == variable.Name)
                 return true;
-            else
-                return false;
+
+            return false;
         }
 
         #endregion
@@ -227,8 +298,10 @@ namespace DeMIPS
         DOUBLE_WORD //64-bits
     }
 
+    //NOTE: this actually doubles as scope.
     enum VariableSource
     {
+        UNDEFINED,
         ARGUMENT,
         LOCAL,
         GLOBAL,

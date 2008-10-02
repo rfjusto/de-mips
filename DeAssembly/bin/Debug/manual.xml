@@ -4,6 +4,15 @@
         <name>DeMIPS</name>
     </assembly>
     <members>
+        <member name="M:DeMIPS.ProgramBlock.GetVariableByNameForced(System.String)">
+            <summary>
+            Searches for variable in the pool of local variables. 
+            If it doesn't exist, create a new one, add it to the
+            pool, and return it.
+            </summary>
+            <param name="name">Variable name.</param>
+            <returns>BlockVariable. Never null.</returns>
+        </member>
         <member name="M:DeMIPS.UtilPreprocessor.PreprocessComments(System.String[],System.String)">
             <summary>
             Splits a lines into code and comment portions.
@@ -25,11 +34,19 @@
             <param name="number">Integer to convert.</param>
             <returns>String containing hexadecimal verions of input.</returns>
         </member>
-        <member name="M:DeMIPS.DeAssembly.DecompileAssembly(System.String[],System.Windows.Forms.TextBox,System.Windows.Forms.TextBox)">
+        <member name="M:DeMIPS.DeAssembly.DecompileAssembly(System.String[],System.Windows.Forms.TextBox)">
             <summary>
             Decompiles file. Very hacked up.
             </summary>
-            <param name="filename">Name to decompile</param>
+            <param name="assemblyFile">array of strings containting code that will be decompiled.</param>
+            <param name="TextBoxOutput">GUI TextBox that results will be copied to.</param>
+        </member>
+        <member name="T:DeMIPS.ProgramChunkAssignment">
+            <summary>
+            This stores an expression in the form of 
+            variable = expression, where variable and expression
+            are objects.
+            </summary>
         </member>
         <member name="T:DeMIPS.DeAssemblyForm">
             <summary>
@@ -84,7 +101,7 @@
             <summary>
             TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
             </summary>
-            <param name="code">Code to process.</param>
+            <param name="file">Code to process.</param>
         </member>
     </members>
 </doc>

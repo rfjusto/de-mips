@@ -154,7 +154,7 @@
             this.TextBoxConsole.Multiline = true;
             this.TextBoxConsole.Name = "TextBoxConsole";
             this.TextBoxConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextBoxConsole.Size = new System.Drawing.Size(869, 89);
+            this.TextBoxConsole.Size = new System.Drawing.Size(869, 142);
             this.TextBoxConsole.TabIndex = 13;
             // 
             // label6
@@ -170,7 +170,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(898, 674);
+            this.ClientSize = new System.Drawing.Size(898, 727);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.TextBoxConsole);
             this.Controls.Add(this.LabelSynced);

@@ -40,6 +40,14 @@ namespace DeMIPS
     {
         const string VARIABLE_MARKER = "$";
 
+        /// <summary>
+        /// Translates a line of MIPS assembly into the intermediate format and returns
+        /// the result.
+        /// </summary>
+        /// <param name="assembly">MIPS assembly.</param>
+        /// <param name="parentBlock">ProgramBlock containing previously translated code
+        /// and associated information</param>
+        /// <returns>Translated chunk.</returns>
         public IProgramChunk TranslateLine(string assembly, ProgramBlock parentBlock)
         {
             IProgramChunk translatedChunk = null;
@@ -188,8 +196,12 @@ namespace DeMIPS
             return translatedChunk;
         }
 
-        //logically we could assume that when this returns false it the string is a constant and that is the case here.
-        //
+        /// <summary>
+        /// Tests if a given token of text is a variable name. In most cases, when this
+        /// returns false, the possible variable is actually a constant.
+        /// </summary>
+        /// <param name="variable">Possible variable name.</param>
+        /// <returns>True if it is a variable.</returns>
         private bool IsVariable(string variable)
         {
             if (!(variable is string))
@@ -204,7 +216,9 @@ namespace DeMIPS
         }
 
         /// <summary>
-        /// TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
+        /// Processes source code by removing non-coding regions,cleaning non-uniform
+        /// whitespace, removing spare characters. TODO: check for malformed input and
+        /// labels existing on same line as keyword.
         /// </summary>
         /// <param name="file">Code to process.</param>
         public void Preprocess(string[] file)
@@ -215,6 +229,12 @@ namespace DeMIPS
             PreprocessByToken(file);
         }
 
+        /// <summary>
+        /// Cleans up tokens in source code. Tokens are defined by blocks of characters
+        /// between spaces. Tokens will have tail ','s removed and space between tokens
+        /// will be normalize to a single space.
+        /// </summary>
+        /// <param name="code">Array of strings containing source code.</param>
         private void PreprocessByToken(string[] code)
         {
             for (int i = 0; i < code.Length; i++)
@@ -235,10 +255,119 @@ namespace DeMIPS
         }
     }
 
-    //FUTURE: Setting up for supporting more than MIPS.
+    /// <summary>
+    /// Interface for the Frontend that will convert assembly to the intermediate
+    /// format. The main purpose of this is preparation for supporting more than MIPS.
+    /// </summary>
     interface IFrontend
     {
         IProgramChunk TranslateLine(string assembly, ProgramBlock parentBlock);
         void Preprocess(string[] file);
     }
 }
+
+/*
+        /// <summary>
+        /// This decompiles a single line of MIPS to C. This will be requiring heavy
+        /// reworking so I won't document much.
+        /// </summary>
+        /// <param name="line">Line to decompile.</param>
+        private void DecompileLine(ProgramLine line) //TODO: finish moving to FrontendMIPS
+        {
+            //LABEL
+            if (line.Assembly.Contains(":"))
+            {
+                line.Highlevel = line.Assembly;//TODO: move to C emitter?
+            }
+            //COMMAND
+            else
+            {
+                string processedLine = ""; //TODO: we should be using an intermediate format before emitting in a highlevel language.
+
+                string lineKeyword = line.Assembly.Split(' ')[0];
+                string[] lineParameters = line.Assembly.Substring(line.Assembly.IndexOf(' ') + 1).Split(' ');
+
+                //strip out any tailing ',' characters or starting '$' (var's)
+                for (int i = 0; i < lineParameters.Length; i++)
+                {
+                    lineParameters[i] = lineParameters[i].TrimEnd(',');
+                    //lineParameters[i] = lineParameters[i].TrimStart('$');//TODO: Dumb. Once MathParser matures, this should be removed.
+                }
+
+                //any $zero's will now be replaced. 
+                //TODO: Once MathParser matures, this should be removed.
+                for (int i = 0; i < lineParameters.Length; i++)
+                    if (lineParameters[i].Equals("$zero"))
+                        lineParameters[i] = "0";
+
+                switch (lineKeyword)
+                {
+                    case "addi": //fall through, MathParser will handle constants.
+                    case "add":
+                        processedLine = MathParser.SimplifyEqual(lineParameters[0], MathParser.SimplifyArithmetic("+", lineParameters[1], lineParameters[2]));
+                        break;
+
+                    case "beql": //fall through. this is suppose to insert NOP before J. V4300i extention.
+                    case "beq":
+                        processedLine = "if ( " + lineParameters[0] + " == " + lineParameters[1] + " ) goto " + lineParameters[2];
+                        break;
+
+                    case "bne":
+                        processedLine = "if ( " + lineParameters[0] + " != " + lineParameters[1] + " ) goto " + lineParameters[2];
+                        break;
+
+                    case "sllv": //fall through, MathParser will still simplify it.  V4300i extention.
+                    case "sll":
+                        if (lineParameters[2].Contains("$"))
+                            throw new Exception("Unexpected variable.");
+                        //HACK: at this point, we know para[2] is a constant. Since this is a bit shift we need to multiple that value by 2.
+                        //      the program is that at this point var's and constants are stored as strings. :(
+                        //      also, this problem may or may not bork the other v/i opcodes.
+                        int tmp = int.Parse(lineParameters[2]) * 2;
+                        lineParameters[2] = "" + tmp;
+                        processedLine = MathParser.SimplifyEqual(lineParameters[0], MathParser.SimplifyArithmetic("*", lineParameters[1], lineParameters[2]));
+                        break;
+
+                    case "subi": //fall through, MathParser will handle constants.
+                    case "sub":
+                        processedLine = MathParser.SimplifyEqual(lineParameters[0], MathParser.SimplifyArithmetic("-", lineParameters[1], lineParameters[2]));
+                        break;
+
+                    case "j":
+                        processedLine = "goto " + lineParameters[0];
+                        break;
+
+                    case "andi":
+                        processedLine = lineParameters[0] + " = " + lineParameters[1] + " & 0x" + lineParameters[2];//assuming immediate is in hex.
+                        break;
+
+                    case "ori":
+                        processedLine = lineParameters[0] + " = " + lineParameters[1] + " | 0x" + lineParameters[2];//assuming immediate is in hex.
+                        break;
+
+#if ENABLE_V4300I_INSTRUCTIONS
+
+                    //FYI: these will actually fall through to the next case.
+                    case "sync": // we don't care about sync'ing memory.
+                    case "cop0": // command involving coprocessor 0.
+
+#endif //ENABLE_V4300I_INSTRUCTIONS
+
+                    case "syscall": //fall through - we don't need this.
+                    case "nop": // fall through - no opcode
+                    case "???": //fall through - we don't need this. Disassembler specific.
+                        processedLine = "//" + lineKeyword;
+                        break;
+
+                }
+
+                if (processedLine.Equals("") && !line.Assembly.Equals(""))
+                    //processedLine = "//Unidentified: \"" + line.Assembly + "\"";
+                    throw new Exception ("//Unidentified: \"" + line.Assembly + "\"");
+                else if (!processedLine.Equals(""))
+                    processedLine += ";";//TODO: move to C emitter or ProgramLine
+
+                line.Highlevel = processedLine;
+            }
+        }
+*/

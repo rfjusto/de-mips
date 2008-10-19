@@ -33,12 +33,16 @@ namespace DeMIPS
 {
     class UtilGeneral
     {
+        #region variables
 
         static public char[] hexTable = new char[] {'0', '1', '2', '3', '4',
                                                     '5', '6', '7', '8', '9',
                                                     'A', 'B', 'C', 'D', 'E',
                                                     'F'};
-        
+
+        #endregion
+
+        #region methods
 
         /// <summary>
         /// Converts a integer to a string by returning its hexadecimal value
@@ -77,5 +81,31 @@ namespace DeMIPS
 
             return result;
         }
+
+        /// <summary>
+        /// Loads the contents of a text file into an array of strings and returns it.
+        /// </summary>
+        /// <param name="filename">Text file.</param>
+        /// <returns>Array of strings containting the text file.</returns>
+        static public string[] LoadTextFile(string filename)
+        {
+            System.IO.StreamReader fileStream = new System.IO.StreamReader(filename);
+            LinkedList<string> fileLines = new LinkedList<string>();
+            string tempLine;
+            string[] fileArray;
+
+            while ((tempLine = fileStream.ReadLine()) != null)
+                fileLines.AddLast(tempLine.Trim().ToLower());
+
+            fileStream.Close();
+
+            //convert linked list to string array
+            fileArray = new string[fileLines.Count];
+            fileLines.CopyTo(fileArray, 0);
+
+            return fileArray;
+        }
+
+        #endregion
     }
 }

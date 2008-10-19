@@ -34,12 +34,24 @@
             <param name="number">Integer to convert.</param>
             <returns>String containing hexadecimal verions of input.</returns>
         </member>
+        <member name="M:DeMIPS.UtilGeneral.LoadTextFile(System.String)">
+            <summary>
+            Loads the contents of a text file into an array of strings and returns it.
+            </summary>
+            <param name="filename">Text file.</param>
+            <returns>Array of strings containting the text file.</returns>
+        </member>
+        <member name="M:DeMIPS.DeAssembly.#ctor">
+            <summary>
+            DeAssembly constructor. Setup Frontend and Backend.
+            </summary>
+        </member>
         <member name="M:DeMIPS.DeAssembly.DecompileAssembly(System.String[],System.Windows.Forms.TextBox)">
             <summary>
-            Decompiles file. Very hacked up.
+            Decompiles source code in a given array. The result is placed into the TextBox that was passed.
             </summary>
-            <param name="assemblyFile">array of strings containting code that will be decompiled.</param>
-            <param name="TextBoxOutput">GUI TextBox that results will be copied to.</param>
+            <param name="assemblyFile">Array of strings containting code.</param>
+            <param name="TextBoxOutput">TextBox that result will be copied to.</param>
         </member>
         <member name="T:DeMIPS.ProgramChunkAssignment">
             <summary>
@@ -80,6 +92,27 @@
             Initializes GUI and starts decompilation process.
             </summary>
             <param name="args">If args[0] exists, it will automatically be decompiled.</param>
+        </member>
+        <member name="M:DeMIPS.DeAssemblyForm.ButtonSelectFile_Click(System.Object,System.EventArgs)">
+            <summary>
+            Opens dialog file for the user to select a file.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:DeMIPS.DeAssemblyForm.ButtonDecompile_Click(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:DeMIPS.DeAssemblyForm.ButtonQuit_Click(System.Object,System.EventArgs)">
+            <summary>
+            Close application.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
         <member name="T:DeMIPS.Properties.Resources">
             <summary>

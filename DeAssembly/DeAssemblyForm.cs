@@ -26,8 +26,6 @@
 //                                                                     //
 /////////////////////////////////////////////////////////////////////////
 
-#define ENABLE_V4300I_INSTRUCTIONS
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,15 +37,15 @@ using System.IO;
 
 namespace DeMIPS
 {
+
     /// <summary>
-    /// Handles GUI events and components.
+    /// Main GUI Form, handles GUI events and components.
     /// </summary>
     public partial class DeAssemblyForm : Form
     {
         #region constants
 
         private const string DEFAULT_FILENAME = "2-30.asm";
-        //private const string DEFAULT_FILENAME = "AlleyCat.asm";
 
         #endregion
 
@@ -58,7 +56,8 @@ namespace DeMIPS
 
         #endregion
 
-        #region entry point
+        #region entry point (main)
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -69,14 +68,16 @@ namespace DeMIPS
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new DeAssemblyForm(args));
         }
+
         #endregion
 
         #region constructor
 
         /// <summary>
-        /// Initializes GUI and starts decompilation process.
+        /// Initializes GUI. If args[0] exists, it will be treated as a
+        /// filename and the decompilation process will be started.
         /// </summary>
-        /// <param name="args">If args[0] exists, it will automatically be decompiled.</param>
+        /// <param name="args">Command line arguments.</param>
         public DeAssemblyForm(string[] args)
         {
             InitializeComponent();
@@ -98,6 +99,11 @@ namespace DeMIPS
 
         #region GUI events
 
+        /// <summary>
+        /// Opens dialog file for the user to select a file.
+        /// </summary>
+        /// <param name="sender">Object that triggered event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ButtonSelectFile_Click(object sender, EventArgs e)
         {
             if (fileSelectionDialog.ShowDialog() == DialogResult.OK)
@@ -107,6 +113,12 @@ namespace DeMIPS
             }
         }
 
+        /// <summary>
+        /// Decompiles the currently selected file and updates the GUI
+        /// with the results.
+        /// </summary>
+        /// <param name="sender">Object that triggered event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ButtonDecompile_Click(object sender, EventArgs e)
         {
             string filename = TextBoxFileName.Text;
@@ -114,7 +126,7 @@ namespace DeMIPS
             if (File.Exists(filename))
             {
                 UtilDebugConsole.Flush();
-                string[] assemblySource = myDecompiler.LoadAssemblyFile(filename);
+                string[] assemblySource = UtilGeneral.LoadTextFile(filename);
 
                 myDecompiler.DecompileAssembly(assemblySource, TextBoxOutput);
 
@@ -122,6 +134,9 @@ namespace DeMIPS
                 LabelSynced.Text = "Synchronized";
                 TextBoxConsole.Lines = UtilDebugConsole.GetAsArray();
 
+                //HACK: deselect text, the GUI selects it for some reason.
+                TextBoxOutput.Select(0, 0);
+                
                 //TODO: make TextBoxConsole auto scroll down.
                 TextBoxConsole.ScrollToCaret();
             }
@@ -129,6 +144,11 @@ namespace DeMIPS
                 MessageBox.Show("Cannot find: " + filename);
         }
 
+        /// <summary>
+        /// Close application.
+        /// </summary>
+        /// <param name="sender">Object that triggered event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ButtonQuit_Click(object sender, EventArgs e)
         {
             this.Close();

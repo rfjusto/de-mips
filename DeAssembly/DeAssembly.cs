@@ -62,7 +62,7 @@ namespace DeMIPS
         /// <param name="TextBoxOutput">TextBox that result will be copied to.</param>
         public void DecompileAssembly(string[] assemblyFile, TextBox TextBoxOutput) //HACK: there should be a better way.
         {
-            //TODO: we need to identify blocks here and spit them apart.
+            //TODO: we need to identify blocks here and split them apart.
             ProgramBlock newBlock = new ProgramBlock();
             string[] sourceFile;
 

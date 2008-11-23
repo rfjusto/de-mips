@@ -62,7 +62,7 @@
         </member>
         <member name="T:DeMIPS.DeAssemblyForm">
             <summary>
-            Handles GUI events and components.
+            Main GUI Form, handles GUI events and components.
             </summary>
         </member>
         <member name="F:DeMIPS.DeAssemblyForm.components">
@@ -89,30 +89,32 @@
         </member>
         <member name="M:DeMIPS.DeAssemblyForm.#ctor(System.String[])">
             <summary>
-            Initializes GUI and starts decompilation process.
+            Initializes GUI. If args[0] exists, it will be treated as a
+            filename and the decompilation process will be started.
             </summary>
-            <param name="args">If args[0] exists, it will automatically be decompiled.</param>
+            <param name="args">Command line arguments.</param>
         </member>
         <member name="M:DeMIPS.DeAssemblyForm.ButtonSelectFile_Click(System.Object,System.EventArgs)">
             <summary>
             Opens dialog file for the user to select a file.
             </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
+            <param name="sender">Object that triggered event.</param>
+            <param name="e">Event arguments.</param>
         </member>
         <member name="M:DeMIPS.DeAssemblyForm.ButtonDecompile_Click(System.Object,System.EventArgs)">
             <summary>
-            
+            Decompiles the currently selected file and updates the GUI
+            with the results.
             </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
+            <param name="sender">Object that triggered event.</param>
+            <param name="e">Event arguments.</param>
         </member>
         <member name="M:DeMIPS.DeAssemblyForm.ButtonQuit_Click(System.Object,System.EventArgs)">
             <summary>
             Close application.
             </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
+            <param name="sender">Object that triggered event.</param>
+            <param name="e">Event arguments.</param>
         </member>
         <member name="T:DeMIPS.Properties.Resources">
             <summary>
@@ -130,11 +132,45 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
+        <member name="T:DeMIPS.IFrontend">
+            <summary>
+            Interface for the Frontend that will convert assembly to the intermediate
+            format. The main purpose of this is preparation for supporting more than MIPS.
+            </summary>
+        </member>
+        <member name="M:DeMIPS.FrontendMIPS.TranslateLine(System.String,DeMIPS.ProgramBlock)">
+            <summary>
+            Translates a line of MIPS assembly into the intermediate format and returns
+            the result.
+            </summary>
+            <param name="assembly">MIPS assembly.</param>
+            <param name="parentBlock">ProgramBlock containing previously translated code
+            and associated information</param>
+            <returns>Translated chunk.</returns>
+        </member>
+        <member name="M:DeMIPS.FrontendMIPS.IsVariable(System.String)">
+            <summary>
+            Tests if a given token of text is a variable name. In most cases, when this
+            returns false, the possible variable is actually a constant.
+            </summary>
+            <param name="variable">Possible variable name.</param>
+            <returns>True if it is a variable.</returns>
+        </member>
         <member name="M:DeMIPS.FrontendMIPS.Preprocess(System.String[])">
             <summary>
-            TODO: full preprocessor. checks for: malformed input, labels existing on same line as keyword, etc.
+            Processes source code by removing non-coding regions,cleaning non-uniform
+            whitespace, removing spare characters. TODO: check for malformed input and
+            labels existing on same line as keyword.
             </summary>
             <param name="file">Code to process.</param>
+        </member>
+        <member name="M:DeMIPS.FrontendMIPS.PreprocessByToken(System.String[])">
+            <summary>
+            Cleans up tokens in source code. Tokens are defined by blocks of characters
+            between spaces. Tokens will have tail ','s removed and space between tokens
+            will be normalize to a single space.
+            </summary>
+            <param name="code">Array of strings containing source code.</param>
         </member>
     </members>
 </doc>

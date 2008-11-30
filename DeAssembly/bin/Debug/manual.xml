@@ -4,20 +4,60 @@
         <name>DeMIPS</name>
     </assembly>
     <members>
-        <member name="T:DeMIPS.Properties.Resources">
+        <member name="M:DeMIPS.ProgramBlock.GetVariableByNameForced(System.String)">
             <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
+            Searches for variable in the pool of local variables. 
+            If it doesn't exist, create a new one, add it to the
+            pool, and return it.
+            </summary>
+            <param name="name">Variable name.</param>
+            <returns>BlockVariable. Never null.</returns>
+        </member>
+        <member name="M:DeMIPS.UtilPreprocessor.PreprocessComments(System.String[],System.String)">
+            <summary>
+            Splits a lines into code and comment portions.
+            </summary>
+            <param name="code">Code to process.</param>
+            <param name="commentMarker">Character(s) that mark regions of comments.</param>
+        </member>
+        <member name="M:DeMIPS.UtilPreprocessor.PreprocessWhiteSpace(System.String[])">
+            <summary>
+            Reconstructs each line to include only one space between tokens.
+            </summary>
+            <param name="code">Code to process.</param>
+        </member>
+        <member name="M:DeMIPS.UtilGeneral.DecimalToHexadecimal(System.Int32)">
+            <summary>
+            Converts a integer to a string by returning its hexadecimal value
+            as a string. The form will be "0xHHHH".
+            </summary>
+            <param name="number">Integer to convert.</param>
+            <returns>String containing hexadecimal verions of input.</returns>
+        </member>
+        <member name="M:DeMIPS.UtilGeneral.LoadTextFile(System.String)">
+            <summary>
+            Loads the contents of a text file into an array of strings and returns it.
+            </summary>
+            <param name="filename">Text file.</param>
+            <returns>Array of strings containting the text file.</returns>
+        </member>
+        <member name="M:DeMIPS.DeAssembly.#ctor">
+            <summary>
+            DeAssembly constructor. Setup Frontend and Backend.
             </summary>
         </member>
-        <member name="P:DeMIPS.Properties.Resources.ResourceManager">
+        <member name="M:DeMIPS.DeAssembly.DecompileAssembly(System.String[],System.Windows.Forms.TextBox)">
             <summary>
-              Returns the cached ResourceManager instance used by this class.
+            Decompiles source code in a given array. The result is placed into the TextBox that was passed.
             </summary>
+            <param name="assemblyFile">Array of strings containting code.</param>
+            <param name="TextBoxOutput">TextBox that result will be copied to.</param>
         </member>
-        <member name="P:DeMIPS.Properties.Resources.Culture">
+        <member name="T:DeMIPS.ProgramChunkAssignment">
             <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
+            This stores an expression in the form of 
+            variable = expression, where variable and expression
+            are objects.
             </summary>
         </member>
         <member name="T:DeMIPS.DeAssemblyForm">
@@ -76,6 +116,22 @@
             <param name="sender">Object that triggered event.</param>
             <param name="e">Event arguments.</param>
         </member>
+        <member name="T:DeMIPS.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:DeMIPS.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:DeMIPS.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
         <member name="T:DeMIPS.IFrontend">
             <summary>
             Interface for the Frontend that will convert assembly to the intermediate
@@ -115,62 +171,6 @@
             will be normalize to a single space.
             </summary>
             <param name="code">Array of strings containing source code.</param>
-        </member>
-        <member name="M:DeMIPS.ProgramBlock.GetVariableByNameForced(System.String)">
-            <summary>
-            Searches for variable in the pool of local variables. 
-            If it doesn't exist, create a new one, add it to the
-            pool, and return it.
-            </summary>
-            <param name="name">Variable name.</param>
-            <returns>BlockVariable. Never null.</returns>
-        </member>
-        <member name="T:DeMIPS.ProgramChunkAssignment">
-            <summary>
-            This stores an expression in the form of 
-            variable = expression, where variable and expression
-            are objects.
-            </summary>
-        </member>
-        <member name="M:DeMIPS.UtilGeneral.DecimalToHexadecimal(System.Int32)">
-            <summary>
-            Converts a integer to a string by returning its hexadecimal value
-            as a string. The form will be "0xHHHH".
-            </summary>
-            <param name="number">Integer to convert.</param>
-            <returns>String containing hexadecimal verions of input.</returns>
-        </member>
-        <member name="M:DeMIPS.UtilGeneral.LoadTextFile(System.String)">
-            <summary>
-            Loads the contents of a text file into an array of strings and returns it.
-            </summary>
-            <param name="filename">Text file.</param>
-            <returns>Array of strings containting the text file.</returns>
-        </member>
-        <member name="M:DeMIPS.UtilPreprocessor.PreprocessComments(System.String[],System.String)">
-            <summary>
-            Splits a lines into code and comment portions.
-            </summary>
-            <param name="code">Code to process.</param>
-            <param name="commentMarker">Character(s) that mark regions of comments.</param>
-        </member>
-        <member name="M:DeMIPS.UtilPreprocessor.PreprocessWhiteSpace(System.String[])">
-            <summary>
-            Reconstructs each line to include only one space between tokens.
-            </summary>
-            <param name="code">Code to process.</param>
-        </member>
-        <member name="M:DeMIPS.DeAssembly.#ctor">
-            <summary>
-            DeAssembly constructor. Setup Frontend and Backend.
-            </summary>
-        </member>
-        <member name="M:DeMIPS.DeAssembly.DecompileAssembly(System.String[],System.Windows.Forms.TextBox)">
-            <summary>
-            Decompiles source code in a given array. The result is placed into the TextBox that was passed.
-            </summary>
-            <param name="assemblyFile">Array of strings containting code.</param>
-            <param name="TextBoxOutput">TextBox that result will be copied to.</param>
         </member>
     </members>
 </doc>

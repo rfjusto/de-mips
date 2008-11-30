@@ -110,13 +110,10 @@ namespace DeMIPS
             return false;
         }
 
-        //Replaces a given list of IProgramBhunk's with a ProgramBlock.
-        public void GenerateSubProgramBlock(LinkedList<IProgramChunk> chunks)
+        //Returns a ProgramBlock from a given list of IProgramChunks.
+        public ProgramBlock GenerateSubProgramBlock(LinkedList<IProgramChunk> chunks)
         {
             ProgramBlock subBlock = new ProgramBlock();
-
-            //Insert new ProgramBlock in this ProgramBlock
-            program.AddBefore(program.Find(chunks.First.Value), subBlock);
 
             //Move chunks to new ProgramBlock.
             foreach (IProgramChunk chunk in chunks)
@@ -125,6 +122,8 @@ namespace DeMIPS
             //Remove those chunks from this ProgramBlock.
             foreach (IProgramChunk chunk in chunks)
                 program.Remove(chunk);
+
+            return subBlock;
         }
 
         #endregion

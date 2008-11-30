@@ -22,7 +22,7 @@
 // 02111-1307, USA, or contact the author(s):                          //
 //                                                                     //
 // Ruben Acuna <flyingfowlsoftware@earthlink.net>                      //
-// Michael Bradley                                                     //
+// Michael Bradley <mbradley1372@cox.net>                              //
 //                                                                     //
 /////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +45,7 @@ namespace DeMIPS
     {
         #region constants
 
-        private const string DEFAULT_FILENAME = "2-30.asm";
+        private const string DEFAULT_FILENAME = "2-29.asm";
 
         #endregion
 

@@ -99,6 +99,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="SimplifyStructures.cs" />
     <Compile Include="UtilDebugConsole.cs" />
     <Compile Include="UtilGeneral.cs" />
     <Compile Include="UtilPreprocessor.cs" />

@@ -129,10 +129,10 @@ namespace DeMIPS
 
         #endregion
 
-        /* This piece of code was intended to be used, but was not deleted because it might have later use
-        
         #region loop methods
 
+        /*
+        // This piece of code was intended to be used, but was not deleted because it might have later use
         //This function returns true if every chunk in listToFind is present in listToSearch
         //As of now, used for detecting everything in a loop, can supposedly be used for all types of loops
         public bool FindAllChunks(LinkedList<IProgramChunk> listToSearch, LinkedList<IProgramChunk> listToFind)
@@ -151,9 +151,9 @@ namespace DeMIPS
                 return true;
 
             return false;
-        }
+        }*/
 
-        #endregion*/
+        #endregion
 
         #region jump and label methods
 

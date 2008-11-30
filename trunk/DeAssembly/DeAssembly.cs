@@ -22,6 +22,7 @@
 // 02111-1307, USA, or contact the author(s):                          //
 //                                                                     //
 // Ruben Acuna <flyingfowlsoftware@earthlink.net>                      //
+// Michael Bradley <mbradley1372@cox.net>                              //
 //                                                                     //
 /////////////////////////////////////////////////////////////////////////
 
@@ -77,6 +78,65 @@ namespace DeMIPS
                 catch (Exception err)
                 {
                     UtilDebugConsole.AddException(err);
+                }
+            }
+
+            //Attempt at detecting loops; starting with a simple branch/j loop and moving on to variable initializations afterward
+            foreach (IProgramChunk chunk in newBlock.Program)
+            {
+                //This checks a program chunk in order to see if it is part of a loop.
+                
+                if (chunk is ProgramChunkJumpTarget)
+                {
+                    newBlock.ProgramAllJumpTargets.AddLast(chunk); //Add branch label to list to check on a jump
+                }
+                if (chunk is ProgramChunkAssignment)
+                {
+                    newBlock.ProgramAllIncrementers.AddLast(chunk); //Add incrementer to list to check on a jump
+                }
+                if (chunk is ProgramChunkJumpUnconditional)
+                {
+                    foreach (IProgramChunk chunk2 in newBlock.ProgramAllJumpTargets)
+                    {
+                        if (((ProgramChunkJumpUnconditional)chunk).Target == chunk2)
+                        {
+                            //Loop detected; rearrange code to form loop
+
+                            UtilDebugConsole.AddMessage("Possible loop involving an unconditional jump found");
+
+                            /*This section of code will use a while loop to run through the code.
+                             Upon detecting chunk2 (the label), it will create a list of the
+                             loop code AS WELL as the code inside the loop.  Upon detecting
+                             chunk, the code will stop writing to both lists.  At this point, one
+                             list will hold the whole loop and one will hold the code within the
+                             loop.  A loop will then be created using chunk, chunk2, and the
+                             linked list of the code within the loop, with everything in the
+                             linked list of the whole loop being deleted from the linked list of
+                             the entire program.  This explanation is here because the code isn't
+                             and I don't want to forget what the code will do.*/
+                        }
+                    }
+                }
+                
+                //This code will supposedly work despite the lack of checking if
+                //the incrementor is inside the loop; it assumes that the code
+                //passed through it has been checked beforehand.  This check
+                //should likely be added in though, as the code might not have
+                //been checked manually.
+                if (chunk is ProgramChunkBranch)
+                {
+                    foreach (IProgramChunk chunk2 in newBlock.ProgramAllIncrementers)
+                    {
+                        //if (((ProgramChunkBranch)chunk).NOT IMPLEMENTED YET == chunk2 //Checks if variable associated with branch is same as incrementer
+                        foreach (IProgramChunk chunk3 in newBlock.ProgramAllJumpTargets)
+                        {
+                            if (((ProgramChunkJumpUnconditional)chunk).Target == chunk3) //Checks if target associated with jump is same as branch
+                            {
+                                UtilDebugConsole.AddMessage("Possible loop involving a branch found");
+                            }
+                        }
+                        //}
+                    }
                 }
             }
 

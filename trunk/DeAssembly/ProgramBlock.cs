@@ -22,6 +22,7 @@
 // 02111-1307, USA, or contact the author(s):                          //
 //                                                                     //
 // Ruben Acuna <flyingfowlsoftware@earthlink.net>                      //
+// Michael Bradley <mbradley1372@cox.net>                              //
 //                                                                     //
 /////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +39,8 @@ namespace DeMIPS
         private LinkedList<BlockVariable> variables;
         private LinkedList<IProgramChunk> program;
         private LinkedList<IProgramChunk> programOrphanJumpTargets;
+        private LinkedList<IProgramChunk> programAllJumpTargets;    //This is used so that the loop routine can perform a check on what branches are there
+        private LinkedList<IProgramChunk> programAllIncrementers;    //This is used so that the loop routine can perform a check on what incrementers are there
 
         #endregion
 
@@ -61,6 +64,17 @@ namespace DeMIPS
             set { programOrphanJumpTargets = value; }
         }
 
+        public LinkedList<IProgramChunk> ProgramAllJumpTargets
+        {
+            get { return programAllJumpTargets; }
+            set { programAllJumpTargets = value; }
+        }
+        public LinkedList<IProgramChunk> ProgramAllIncrementers
+        {
+            get { return programAllIncrementers; }
+            set { programAllIncrementers = value; }
+        }
+
         #endregion
 
         #region constructor
@@ -70,6 +84,8 @@ namespace DeMIPS
             Variables = new LinkedList<BlockVariable>();
             Program = new LinkedList<IProgramChunk>();
             ProgramOrphanJumpTargets = new LinkedList<IProgramChunk>();
+            ProgramAllJumpTargets = new LinkedList<IProgramChunk>();
+            ProgramAllIncrementers = new LinkedList<IProgramChunk>();
         }
 
         #endregion
@@ -112,6 +128,32 @@ namespace DeMIPS
         }
 
         #endregion
+
+        /* This piece of code was intended to be used, but was not deleted because it might have later use
+        
+        #region loop methods
+
+        //This function returns true if every chunk in listToFind is present in listToSearch
+        //As of now, used for detecting everything in a loop, can supposedly be used for all types of loops
+        public bool FindAllChunks(LinkedList<IProgramChunk> listToSearch, LinkedList<IProgramChunk> listToFind)
+        {
+            int found = 0;
+            foreach (IProgramChunk chunk in listToFind)
+            {
+                //Check if the list to search contains each entry in the list to find (one at a time using foreach loop)
+                if (listToSearch.Contains(chunk) == true)
+                {
+                    found++;
+                }
+            }
+            //Check if number of items found is the same as the number of items in the linked list
+            if (found == listToFind.Count)
+                return true;
+
+            return false;
+        }
+
+        #endregion*/
 
         #region jump and label methods
 

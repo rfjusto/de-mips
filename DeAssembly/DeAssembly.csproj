@@ -59,6 +59,7 @@
     <Compile Include="BackendC.cs" />
     <Compile Include="ProgramChunkAssignment.cs" />
     <Compile Include="ProgramChunkExpression.cs" />
+    <Compile Include="ProgramChunkLoop.cs" />
     <Compile Include="ProgramChunkNoOperation.cs" />
     <Compile Include="FrontendMIPS.cs" />
     <Compile Include="IProgramChunk.cs" />

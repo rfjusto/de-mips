@@ -39,7 +39,7 @@ namespace DeMIPS
         #region variables
 
         private IProgramChunk loopLabel;
-        private LinkedList<IProgramChunk> loopCode;
+        private ProgramBlock innerCode;
 
         #endregion
 
@@ -51,13 +51,20 @@ namespace DeMIPS
             set { loopLabel = value; }
         }
 
+        public ProgramBlock InnerCode
+        {
+            get { return innerCode; }
+            set { innerCode = value; }
+        }
+
         #endregion
 
         #region constructor
 
-        public ProgramChunkLoop(IProgramChunk LoopLabel2)
+        public ProgramChunkLoop(IProgramChunk LoopLabel2, ProgramBlock innerCode)
         {
             LoopLabel = LoopLabel2;
+            InnerCode = innerCode;
         }
 
         #endregion
@@ -67,6 +74,9 @@ namespace DeMIPS
         //TODO: Implement me!
         public bool UsesVariable(BlockVariable variable)
         {
+            if(InnerCode.UsesVariable(variable))
+                return true;
+
             return false;
         }
 

@@ -92,22 +92,27 @@ namespace DeMIPS
                     break;
                     #endregion
 
-                    #region SLL - Shift Left Logical (constant or variable)
-                    
-                    //TODO: this code can probably be mapped more generically...
+                    #region Form: (command) product, multiplicand, multiplier
+
                     case "addi":
                     case "add":
-                    case "sllv":
-                    case "sll":
+                    case "sllv"://SLL - Shift Left Logical (variable)
+                    case "sll": //SLL - Shift Left Logical (constant)
+                    case "sub":
+                    case "subi":
                         //Form: (command) product, multiplicand, multiplier
                         //see below (or above i guess) to see acceptable commands
 
-                        //Addition: 'add', and 'addi'
+                        //Addition: 'add', and 'addi' (default)
                         Operand commandOperand = Operand.ADDITION;
 
                         //Multiplication: 'sll', and 'sllv'
                         if(lineKeyword.Equals("sll") || lineKeyword.Equals("sllv"))
                             commandOperand = Operand.MULTIPLICATION;
+
+                        //Subtraction: 'sub', and 'subi'
+                        if(lineKeyword.Equals("sub") || lineKeyword.Equals("subi"))
+                            commandOperand = Operand.SUBTRACTION;
 
                         BlockVariable termAssignee;  //must be variable
                         ProgramChunkExpressionTerm termMultiplicand;//constant or variable? I think the doc only support var's

@@ -44,10 +44,15 @@ namespace DeMIPS
             LinkedList<string> blockList = new LinkedList<string>();
             string[] blockSource;
 
+            blockList.AddLast("{");
+
             foreach (IProgramChunk chunk in block.Program)
             {
-                blockList.AddLast(EmitChunk(chunk));
+                foreach(string line in EmitChunk(chunk))
+                    blockList.AddLast(line);
             }
+
+            blockList.AddLast("}");
 
             blockSource = new string[blockList.Count];
             blockList.CopyTo(blockSource, 0);
@@ -55,23 +60,24 @@ namespace DeMIPS
             return blockSource;
         }
 
-        public string EmitChunk(IProgramChunk chunk)
+        public string[] EmitChunk(IProgramChunk chunk)
         {
-            string programLine;
+            string[] programLines;
+            LinkedList<string> lines = new LinkedList<string>();
 
             if (chunk is ProgramChunkJumpTarget)
             {
                 //Form: (label):
                 ProgramChunkJumpTarget activeChunk = (ProgramChunkJumpTarget)chunk;
 
-                programLine = activeChunk.Label + ":";
+                lines.AddLast(activeChunk.Label + ":");
             }
             else if (chunk is ProgramChunkJumpUnconditional)
             {
                 //Form: goto (label)
                 ProgramChunkJumpUnconditional activeChunk = (ProgramChunkJumpUnconditional)chunk;
 
-                programLine = "goto " + activeChunk.Target.Label + ";";
+                lines.AddLast("goto " + activeChunk.Target.Label + ";");
             }
             else if (chunk is ProgramChunkAssignment)   
             {
@@ -79,29 +85,61 @@ namespace DeMIPS
                 ProgramChunkAssignment activeChunk = (ProgramChunkAssignment)chunk;
 
                 //1) determine the variable that will recieve this assignment.
-                programLine = activeChunk.Variable.Name;
-
                 //2) emit the code that will assign the expression to the variable.
-                programLine += " = ";
-
                 //3) determine the expression that will that variable will be assigned to.
-                programLine += ParseExpression(activeChunk.Expression);
+                lines.AddLast(activeChunk.Variable.Name + " = " + EmitExpression(activeChunk.Expression) + ";");
+            }
+            else if (chunk is ProgramChunkLoop)
+            {
+                ProgramChunkLoop activeChunk = (ProgramChunkLoop)chunk;
+
+                lines.AddLast("while (true)");
+                foreach(string line in EmitBlock(activeChunk.InnerCode))
+                    lines.AddLast(line);
             }
             else
             {
                 UtilDebugConsole.AddException(new ExceptionWarning("BackendC - No operation IProgramChunk found, emitting NOP."));
 
-                programLine = "//NOP";
+                lines.AddLast("//NOP");
             }
 
-            return programLine;
+            programLines = new string[lines.Count];
+            lines.CopyTo(programLines, 0);
+
+            return programLines;
         }
 
-    private string ParseExpression(ProgramChunkExpression expression)
+    private string EmitExpression(ProgramChunkExpression expression)
     {
-        //TODO: handle recursive parsing of subexpressions.
+        string finalExpression;
 
-        return "Unimplemented!";
+        if (expression.FirstTerm is BlockConstant)
+            finalExpression = ((BlockConstant)expression.FirstTerm).Constant.ToString();
+        else if (expression.FirstTerm is BlockVariable)
+            finalExpression = ((BlockVariable)expression.FirstTerm).Name;
+        else
+            throw new Exception("Attempted to emit an expression with at term that was not a constant or variable.");
+
+        if (expression.Oper == Operand.ADDITION)
+            finalExpression += " + ";
+        else if (expression.Oper == Operand.DIVISION)
+            finalExpression += " / ";
+        else if (expression.Oper == Operand.MULTIPLICATION)
+            finalExpression += " * ";
+        else if (expression.Oper == Operand.SUBTRACTION)
+            finalExpression += " - ";
+        else
+            throw new Exception("Attempted to emit an expression with an operand that doesn't exist.");
+
+        if (expression.SecondTerm is BlockConstant)
+            finalExpression += ((BlockConstant)expression.SecondTerm).Constant.ToString();
+        else if (expression.SecondTerm is BlockVariable)
+            finalExpression += ((BlockVariable)expression.SecondTerm).Name;
+        else
+            throw new Exception("Attempted to emit an expression with at term that was not a constant or variable.");
+
+        return finalExpression;
     }
 
     }
@@ -110,6 +148,6 @@ namespace DeMIPS
     interface IBackend
     {
         string[] EmitBlock(ProgramBlock block);
-        string EmitChunk(IProgramChunk chunk);
+        string[] EmitChunk(IProgramChunk chunk);
     }
 }

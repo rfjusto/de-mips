@@ -33,32 +33,45 @@ using System.Text;
 
 namespace DeMIPS
 {
-    //NOTE: this class is designed to be recursive in nature.
     class ProgramChunkExpression : IProgramChunk
     {
         #region variables
 
-        private Queue<ProgramChunkExpressionTerm> terms;
+        ProgramChunkExpressionTerm firstTerm;
+        ProgramChunkExpressionTerm secondTerm;
+        Operand oper;
 
         #endregion
 
         #region properties
 
-        public Queue<ProgramChunkExpressionTerm> Terms
+        public Operand Oper
         {
-            get { return terms; }
-            set { terms = value; }
+            get { return oper; }
+            set { oper = value; }
+        }
+
+        public ProgramChunkExpressionTerm FirstTerm
+        {
+            get { return firstTerm; }
+            set { firstTerm = value; }
+        }
+
+        public ProgramChunkExpressionTerm SecondTerm
+        {
+            get { return secondTerm; }
+            set { secondTerm = value; }
         }
 
         #endregion
 
         #region constructor
 
-        public ProgramChunkExpression(ProgramChunkExpressionTerm startingTerm)
+        public ProgramChunkExpression(ProgramChunkExpressionTerm firstTerm, Operand oper, ProgramChunkExpressionTerm secondTerm)
         {
-            Terms = new Queue<ProgramChunkExpressionTerm>();
-           
-            Terms.Enqueue(startingTerm);
+            FirstTerm = firstTerm;
+            SecondTerm = secondTerm;
+            Oper = oper;
         }
 
         #endregion
@@ -74,12 +87,11 @@ namespace DeMIPS
         #endregion
     }
 
-    class ProgramChunkTermConstant : ProgramChunkExpressionTerm
+    class BlockConstant : ProgramChunkExpressionTerm
     {
         #region variables
 
         int constant;
-        Operand op;
 
         #endregion
 
@@ -91,27 +103,14 @@ namespace DeMIPS
             set { constant = value; }
         }
 
-        public Operand Operator
-        {
-            get { return op; }
-            set { op = value; }
-        }
-
         #endregion
 
         #region constructor
 
-        public ProgramChunkTermConstant(int constant) : this(Operand.ADDITION, constant)
+        public BlockConstant(int constant)
         {
+            Constant = constant;
         }
-
-        public ProgramChunkTermConstant(Operand op, int constant)
-        {
-            Operator = op;
-            Constant = Math.Abs(constant);
-        }
-
-        //TODO: toString? Or should that reside in the backend?
 
         #endregion
 
@@ -127,15 +126,7 @@ namespace DeMIPS
 
     interface ProgramChunkExpressionTerm
     {
-        //NOTE: Don't extend IProgramChunk, do that would mean
-        //we accept any valid ProgramChunk not just terms.
-        bool UsesVariable(BlockVariable variable);
 
-        Operand Operator
-        {
-            get;
-            set;
-        }
     }
 
     enum Operand
@@ -144,6 +135,6 @@ namespace DeMIPS
         SUBTRACTION,
         MULTIPLICATION,
         DIVISION,
-        EQUAL
+        //EQUAL
     }
 }

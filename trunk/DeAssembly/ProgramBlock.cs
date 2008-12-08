@@ -267,7 +267,6 @@ namespace DeMIPS
         private string name;
         private VariableType type;
         private VariableSource source;
-        private Operand op;
 
         #endregion
 
@@ -291,32 +290,21 @@ namespace DeMIPS
             set { source = value; }
         }
 
-        public Operand Operator//<----------------------------------------WRONGWRONGWRONG!!!!!!!!WRONG!! BLAH! :S
-        {
-            get { return op; }
-            set { op = value; }
-        }
-
         #endregion
 
         #region constructor
 
         public BlockVariable(string name)
-            : this(name, Operand.ADDITION, VariableType.UNDEFINED, VariableSource.UNDEFINED)
+            : this(name, VariableType.UNDEFINED, VariableSource.UNDEFINED)
         {
+            //this function
         }
 
         public BlockVariable(string name, VariableType type, VariableSource source)
-            : this(name, Operand.ADDITION, type, source)
-        {
-        }
-
-        public BlockVariable(string name, Operand op, VariableType type, VariableSource source)
         {
             Name = name;
             Type = type;
             Source = source;
-            Operator = op;
         }
 
         #endregion

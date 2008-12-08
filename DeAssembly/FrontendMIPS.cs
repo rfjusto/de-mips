@@ -29,11 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-//FIXME: right now the operand is kept track of with the
-//block variable, the problem is that the variable may be
-//used in different mathimatcal ways depending the expression
-//that it is used in.
-
 namespace DeMIPS
 {
     class FrontendMIPS : IFrontend
@@ -148,7 +143,7 @@ namespace DeMIPS
                             //CHECKME: attempt to parse hex numbers, does it work this way?
                             int term = int.Parse(lineParameters[1], System.Globalization.NumberStyles.HexNumber);
 
-                            termMultiplicand = new ProgramChunkTermConstant(term);
+                            termMultiplicand = new BlockConstant(term);
                         }
 
                         #endregion
@@ -165,8 +160,11 @@ namespace DeMIPS
                         }
                         else//constant
                         {
-                            //CHECKME: attempt to parse hex numbers, does it work this way?
-                            int term = int.Parse(lineParameters[2], System.Globalization.NumberStyles.HexNumber);
+                            //TODO: support hex numbers
+                            if(lineParameters[2].Contains("x"))
+                                throw new Exception("FrontendMIPS - Cannot parse hexidecimal numbers.");
+
+                            int term = int.Parse(lineParameters[2]);
 
                             //deal with bit shifts
                             if (lineKeyword.Equals("sll"))
@@ -175,15 +173,12 @@ namespace DeMIPS
                                 throw new Exception("FrontendMIPS - Cannot bit shift by variable without subexpression support.");
 
 
-                            termMultiplier = new ProgramChunkTermConstant(int.Parse(lineParameters[2]) * 2);
+                            termMultiplier = new BlockConstant(term);
                         }
-
-                        termMultiplier.Operator = commandOperand;
 
                         #endregion
 
-                        ProgramChunkExpression expression = new ProgramChunkExpression(termMultiplicand);
-                        expression.Terms.Enqueue(termMultiplier);
+                        ProgramChunkExpression expression = new ProgramChunkExpression(termMultiplicand, commandOperand, termMultiplier);
 
                         translatedChunk = new ProgramChunkAssignment(termAssignee, expression);
                         break;

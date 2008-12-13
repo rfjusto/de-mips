@@ -72,6 +72,18 @@ namespace DeMIPS
             FirstTerm = firstTerm;
             SecondTerm = secondTerm;
             Oper = oper;
+
+            /*
+            //HACK: simplify minus.
+            if (oper == Operand.ADDITION && secondTerm is BlockConstant)
+            {
+                if (((BlockConstant)secondTerm).Constant < 0)
+                {
+                    ((BlockConstant)secondTerm).Constant = Math.Abs(((BlockConstant)secondTerm).Constant);
+                    oper = Operand.SUBTRACTION;
+                }
+            }
+            */
         }
 
         #endregion

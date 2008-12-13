@@ -85,6 +85,8 @@ namespace DeMIPS
 
             sourceFile = activeBackend.EmitBlock(newBlock);
 
+            sourceFile = activeBackend.ProcessOutput(sourceFile);
+
             if(!newBlock.IsSane())
                 UtilDebugConsole.AddException(new ExceptionWarning("DeAssembly - Insane Blocks were found."));
 
@@ -99,4 +101,5 @@ namespace DeMIPS
         #endregion
 
     }
+
 }

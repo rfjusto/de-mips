@@ -38,7 +38,11 @@ namespace DeMIPS
 {
     class BackendC : IBackend
     {
-
+        /// <summary>
+        /// Converts a ProgramBlock to C.
+        /// </summary>
+        /// <param name="block">ProgramBlock to convert.</param>
+        /// <returns>ProgramBlock in C.</returns>
         public string[] EmitBlock(ProgramBlock block)
         {
             LinkedList<string> blockList = new LinkedList<string>();
@@ -97,6 +101,48 @@ namespace DeMIPS
                 foreach(string line in EmitBlock(activeChunk.InnerCode))
                     lines.AddLast(line);
             }
+            else if (chunk is ProgramChunkBranch)
+            {
+                ProgramChunkBranch activeChunk = (ProgramChunkBranch)chunk;
+                //beq $a1 0 finish
+                string line = "if(";
+
+                //first term
+                if (activeChunk.TermFirst is BlockConstant)
+                    line += ((BlockConstant)activeChunk.TermFirst).Constant.ToString();
+                else
+                    line += ((BlockVariable)activeChunk.TermFirst).Name;
+
+                //equality
+                if (activeChunk.EqualityChecked == Equality.EQUAL)
+                    line += " == ";
+                else if (activeChunk.EqualityChecked == Equality.NOT_EQUAL)
+                    line += " != ";
+                else
+                    line += " ?? ";
+
+                //second term
+                if (activeChunk.TermSecond is BlockConstant)
+                    line += ((BlockConstant)activeChunk.TermSecond).Constant.ToString();
+                else
+                    line += ((BlockVariable)activeChunk.TermSecond).Name;
+                line += ")";
+
+                lines.AddLast(line);
+
+                if (EmitChunk(activeChunk.TrueChunk).Length == 1)
+                    lines.AddLast(EmitChunk(activeChunk.TrueChunk)[0]);
+                else
+                {
+                    lines.AddLast("{");
+                    foreach (string programLine in EmitChunk(activeChunk.TrueChunk))
+                        lines.AddLast(programLine);
+                    lines.AddLast("}");
+                }
+
+                if(!(activeChunk.FalseChunk is ProgramChunkNoOperation))
+                    throw new Exception("BackendC - Unimplemented false branch.");
+            }
             else
             {
                 UtilDebugConsole.AddException(new ExceptionWarning("BackendC - No operation IProgramChunk found, emitting NOP."));
@@ -110,38 +156,69 @@ namespace DeMIPS
             return programLines;
         }
 
-    private string EmitExpression(ProgramChunkExpression expression)
-    {
-        string finalExpression;
+        private string EmitExpression(ProgramChunkExpression expression)
+        {
+            string finalExpression;
 
-        if (expression.FirstTerm is BlockConstant)
-            finalExpression = ((BlockConstant)expression.FirstTerm).Constant.ToString();
-        else if (expression.FirstTerm is BlockVariable)
-            finalExpression = ((BlockVariable)expression.FirstTerm).Name;
-        else
-            throw new Exception("Attempted to emit an expression with at term that was not a constant or variable.");
+            if (expression.FirstTerm is BlockConstant)
+                finalExpression = ((BlockConstant)expression.FirstTerm).Constant.ToString();
+            else if (expression.FirstTerm is BlockVariable)
+                finalExpression = ((BlockVariable)expression.FirstTerm).Name;
+            else
+                throw new Exception("Attempted to emit an expression with at term that was not a constant or variable.");
 
-        if (expression.Oper == Operand.ADDITION)
-            finalExpression += " + ";
-        else if (expression.Oper == Operand.DIVISION)
-            finalExpression += " / ";
-        else if (expression.Oper == Operand.MULTIPLICATION)
-            finalExpression += " * ";
-        else if (expression.Oper == Operand.SUBTRACTION)
-            finalExpression += " - ";
-        else
-            throw new Exception("Attempted to emit an expression with an operand that doesn't exist.");
+            //HACK: e.g. n + 0
+            if (expression.SecondTerm is BlockConstant && ((BlockConstant)expression.SecondTerm).Constant == 0 && expression.Oper == Operand.ADDITION)
+                return finalExpression;
 
-        if (expression.SecondTerm is BlockConstant)
-            finalExpression += ((BlockConstant)expression.SecondTerm).Constant.ToString();
-        else if (expression.SecondTerm is BlockVariable)
-            finalExpression += ((BlockVariable)expression.SecondTerm).Name;
-        else
-            throw new Exception("Attempted to emit an expression with at term that was not a constant or variable.");
+            if (expression.Oper == Operand.ADDITION)
+                finalExpression += " + ";
+            else if (expression.Oper == Operand.DIVISION)
+                finalExpression += " / ";
+            else if (expression.Oper == Operand.MULTIPLICATION)
+                finalExpression += " * ";
+            else if (expression.Oper == Operand.SUBTRACTION)
+                finalExpression += " - ";
+            else
+                throw new Exception("Attempted to emit an expression with an operand that doesn't exist.");
 
-        return finalExpression;
-    }
+            if (expression.SecondTerm is BlockConstant)
+                finalExpression += ((BlockConstant)expression.SecondTerm).Constant.ToString();
+            else if (expression.SecondTerm is BlockVariable)
+                finalExpression += ((BlockVariable)expression.SecondTerm).Name;
+            else
+                throw new Exception("Attempted to emit an expression with at term that was not a constant or variable.");
 
+            return finalExpression;
+        }
+
+        /// <summary>
+        /// Indents C code based on bracer usage.
+        /// </summary>
+        /// <param name="code">Unformated code.</param>
+        /// <returns>Formated code.</returns>
+        public string[] ProcessOutput(string[] code)
+        {
+            int indentLevel = 0;
+
+            for (int x = 0; x < code.Length; x++)
+            {
+                if (code[x].Contains("}"))
+                    indentLevel--;
+
+                for(int i = 0; i < indentLevel; i ++)
+                    code[x] = "  " + code[x];
+
+                if (code[x].Contains("{"))
+                    indentLevel++;
+
+                if (code[x].Contains("if(") && !code[x+1].Contains("{"))
+                    code[x + 1] = "  " + code[x + 1];
+
+            }
+
+            return code;
+        }
     }
 
     //FUTURE: Setting up for supporting more than C.
@@ -149,5 +226,6 @@ namespace DeMIPS
     {
         string[] EmitBlock(ProgramBlock block);
         string[] EmitChunk(IProgramChunk chunk);
+        string[] ProcessOutput(string[] code);
     }
 }

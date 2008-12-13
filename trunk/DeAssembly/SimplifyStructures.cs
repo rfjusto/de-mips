@@ -47,6 +47,8 @@ namespace DeMIPS
             //will be complete by the time it checks the jumps
 
             ProgramBlock codeToDelete = new ProgramBlock();
+            ProgramChunkLoop newLoop = null;
+            ProgramChunkJumpTarget startLabel = null;
 
             foreach (IProgramChunk chunk in currentBlock.Program)
             {
@@ -125,8 +127,9 @@ namespace DeMIPS
                                             }
                                                 
                                         }
-                                        ProgramChunkLoop newLoop = new ProgramChunkLoop(loopInnerCode);
+                                        newLoop = new ProgramChunkLoop(loopInnerCode);
                                         // // // Code to add ProgramChunkLoop before chunk2 goes here; I can't figure out how to change the input to fit the required function // // //
+                                        //currentBlock.Program.AddBefore(currentBlock.Program.Last, newLoop);
                                         
                                         foreach (IProgramChunk loopDelete in loopOuterCode.Program) {
                                             codeToDelete.Program.AddLast(loopDelete);
@@ -145,6 +148,19 @@ namespace DeMIPS
                     }
                 }
             }
+
+            //find label that code should be added before
+            foreach (IProgramChunk chunk in codeToDelete.Program)
+                if (chunk is ProgramChunkJumpTarget)
+                {
+                    startLabel = (ProgramChunkJumpTarget)chunk;
+                    break;
+                }
+
+            //HACK:
+            if (newLoop != null)
+                currentBlock.Program.AddBefore(currentBlock.Program.Find(startLabel), newLoop);
+
             foreach (IProgramChunk loopDelete in codeToDelete.Program)
             {
                 currentBlock.Program.Remove(loopDelete);
@@ -175,7 +191,6 @@ namespace DeMIPS
                 }
             }
             */
-
         }
     }
 }

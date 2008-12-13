@@ -184,6 +184,83 @@ namespace DeMIPS
                         break;
                     #endregion
 
+                    #region Branchs (BNE, BEQ)
+
+                    //Form: if (var equality var) goto label.
+                    //e.g. "beq $a1 0 finish"
+                    case "bne":
+                    case "beq":
+                    {
+                        Equality equality;
+                        ProgramChunkExpressionTerm first;
+                        ProgramChunkExpressionTerm second;
+                        ProgramChunkJumpTarget target;
+
+                        #region 1) determine equality
+
+                        if (lineKeyword.Equals("bne"))
+                            equality = Equality.NOT_EQUAL;
+                        else if (lineKeyword.Equals("beq"))
+                            equality = Equality.EQUAL;
+                        else
+                            throw new Exception("FrontendMIPS - Unimplemented equality found.");
+
+                        #endregion
+
+                        #region 2) find first item to evaluate
+
+                        if (IsVariable(lineParameters[0]))
+                        {
+                            ProcessVariable(ref lineParameters[0]);
+                            first = parentBlock.GetVariableByNameForced(lineParameters[0]);
+                        }
+                        else //constant
+                        {
+                            //TODO: support hex numbers
+                            if (lineParameters[0].Contains("x"))
+                                throw new Exception("FrontendMIPS - Cannot parse hexidecimal numbers.");
+
+                            first = new BlockConstant(int.Parse(lineParameters[0]));
+                        }
+
+                        #endregion
+
+                        #region 3) find second item to evaluate
+
+                        if (IsVariable(lineParameters[1]))
+                        {
+                            ProcessVariable(ref lineParameters[1]);
+                            second = parentBlock.GetVariableByNameForced(lineParameters[1]);
+                        }
+                        else //constant
+                        {
+                            //TODO: support hex numbers
+                            if (lineParameters[1].Contains("x"))
+                                throw new Exception("FrontendMIPS - Cannot parse hexidecimal numbers.");
+
+                            second = new BlockConstant(int.Parse(lineParameters[1]));
+                        }
+
+                        #endregion
+
+                        #region 4) generate jump for true
+
+                        target = parentBlock.GetJumpTargetByLabel(lineParameters[2]);
+
+                        //label does not exist but should be defined later. create an orphan placeholder.
+                        if (target == null)
+                        {
+                            target = new ProgramChunkJumpTarget(lineParameters[2]);
+                            parentBlock.AddOrphanJumpTarget(target);
+                        }
+
+                        #endregion
+
+                        translatedChunk = new ProgramChunkBranch(equality, first, new ProgramChunkJumpUnconditional(target), second, new ProgramChunkNoOperation());
+                    }
+                    break;
+
+                    #endregion
                 }
             }
 
